@@ -476,7 +476,6 @@ public class LoopBanner extends FrameLayout {
      * @param limit 离屏缓存个数
      */
     public void setOffscreenPageLimit(int limit) {
-        checkAdapter("setOffscreenPageLimit");
         mOffscreenPageLimit = limit;
         mViewPager.setOffscreenPageLimit(limit);
     }
@@ -491,7 +490,6 @@ public class LoopBanner extends FrameLayout {
      * @param interval 间隔时间
      */
     public void setInterval(long interval) {
-        checkAdapter("setInterval");
         mInterval = interval;
     }
 
@@ -501,7 +499,6 @@ public class LoopBanner extends FrameLayout {
      * @param pageTransformer 切换动画
      */
     public void setPageTransformer(ViewPager.PageTransformer pageTransformer) {
-        checkAdapter("setPageTransformer");
         mViewPager.setPageTransformer(false, pageTransformer);
     }
 
