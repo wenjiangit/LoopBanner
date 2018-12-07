@@ -19,7 +19,6 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-
 import com.wenjian.loopbanner.indicator.IndicatorAdapter;
 import com.wenjian.loopbanner.indicator.JDIndicatorAdapter;
 import com.wenjian.loopbanner.indicator.SelectDrawableAdapter;
@@ -228,9 +227,12 @@ public class LoopBanner extends FrameLayout {
     }
 
     private void init() {
-        //对超出父布局的子View不进行剪切,禁用硬件加速
-        setClipChildren(false);
-        setLayerType(LAYER_TYPE_SOFTWARE, null);
+
+        if (mLrMargin != 0) {
+            //对超出父布局的子View不进行剪切,禁用硬件加速
+            setClipChildren(false);
+            setLayerType(LAYER_TYPE_SOFTWARE, null);
+        }
 
         mViewPager = new ViewPager(getContext());
         setupViewPager(mViewPager);
@@ -615,14 +617,21 @@ public class LoopBanner extends FrameLayout {
         }
     }
 
+    private void setIndicatorAdapter(IndicatorAdapter indicatorAdapter, boolean byeUser) {
+        if (byeUser) {
+            checkAdapter("setIndicatorAdapter");
+        }
+        mIndicatorAdapter = Tools.checkNotNull(indicatorAdapter, "indicatorAdapter is null");
+    }
+
+
     /**
      * 设置指示适配器
      *
      * @param indicatorAdapter IndicatorAdapter
      */
     public void setIndicatorAdapter(IndicatorAdapter indicatorAdapter) {
-        checkAdapter("setIndicatorAdapter");
-        mIndicatorAdapter = Tools.checkNotNull(indicatorAdapter, "indicatorAdapter is null");
+        this.setIndicatorAdapter(indicatorAdapter, true);
     }
 
     /**
@@ -631,7 +640,6 @@ public class LoopBanner extends FrameLayout {
      * @param listener OnPageSelectListener
      */
     public void setOnPageSelectListener(OnPageSelectListener listener) {
-        checkAdapter("setOnPageSelectListener");
         this.mSelectListener = listener;
     }
 
@@ -661,7 +669,7 @@ public class LoopBanner extends FrameLayout {
         }
         switch (style) {
             case JD:
-                setIndicatorAdapter(new JDIndicatorAdapter());
+                setIndicatorAdapter(new JDIndicatorAdapter(), false);
                 break;
             case PILL:
                 setIndicatorResource(R.drawable.indicator_select, R.drawable.indicator_unselect, byUser);

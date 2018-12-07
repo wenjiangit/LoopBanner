@@ -1,8 +1,6 @@
 package com.wenjian.loopbanner.indicator;
 
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.StateListDrawable;
-import android.support.v4.view.ViewCompat;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -19,11 +17,9 @@ public final class SelectDrawableAdapter implements IndicatorAdapter {
 
     @Override
     public void addIndicator(LinearLayout container, Drawable drawable, int size, int margin) {
-        StateListDrawable listDrawable = (StateListDrawable) drawable;
-        int[] state = listDrawable.getState();
         LinearLayout.LayoutParams layoutParams = generateLayoutParams(drawable, size, margin);
         ImageView image = new ImageView(container.getContext());
-        ViewCompat.setBackground(image, drawable);
+        image.setImageDrawable(drawable);
         container.addView(image, layoutParams);
     }
 

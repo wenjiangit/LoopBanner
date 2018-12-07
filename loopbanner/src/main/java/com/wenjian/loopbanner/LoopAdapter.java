@@ -3,11 +3,7 @@ package com.wenjian.loopbanner;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.ColorInt;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.IdRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
+import android.support.annotation.*;
 import android.support.v4.view.PagerAdapter;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -71,7 +67,7 @@ public abstract class LoopAdapter<T> extends PagerAdapter {
             holder = new ViewHolder(convertView);
             convertView.setTag(R.id.key_holder, holder);
             addClickListenerIfNeed(dataPosition, convertView);
-            onBindView(holder, mData.get(dataPosition));
+            onBindView(holder, mData.get(dataPosition), dataPosition);
         }
         return addViewSafely(container, holder.itemView);
     }
@@ -147,7 +143,7 @@ public abstract class LoopAdapter<T> extends PagerAdapter {
      * @param holder ViewHolder
      * @param data   数据
      */
-    protected abstract void onBindView(ViewHolder holder, T data);
+    protected abstract void onBindView(ViewHolder holder, T data, int position);
 
     /**
      * 设置数据集

@@ -19,7 +19,7 @@ class SimpleImageAdapter extends LoopAdapter<String> {
     }
 
     @Override
-    public void onBindView(ViewHolder holder, String data) {
+    public void onBindView(ViewHolder holder, String data,int position) {
         ImageView itemView = (ImageView) holder.itemView;
         Glide.with(itemView.getContext())
                 .load(data)
