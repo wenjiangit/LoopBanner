@@ -666,7 +666,7 @@ public class LoopBanner extends FrameLayout {
         }
         switch (style) {
             case JD:
-                setIndicatorAdapter(new JDIndicatorAdapter(), false);
+                setIndicatorAdapter(new JDIndicatorAdapter(), byUser);
                 break;
             case PILL:
                 setIndicatorResource(R.drawable.indicator_select, R.drawable.indicator_unselect, byUser);
