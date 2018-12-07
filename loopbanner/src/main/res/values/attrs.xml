@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="LoopBanner">
+
+        <attr name="lb_pageMargin" format="dimension|reference" />
+        <attr name="lb_canLoop" format="boolean" />
+        <attr name="lb_lrMargin" format="dimension|reference" />
+        <attr name="lb_topMargin" format="dimension|reference" />
+        <attr name="lb_bottomMargin" format="dimension|reference" />
+        <attr name="lb_interval" format="integer" />
+        <attr name="lb_offsetPageLimit" format="integer" />
+        <attr name="lb_margin" format="dimension|reference" />
+        <attr name="lb_showIndicator" format="boolean" />
+        <attr name="lb_indicatorGravity">
+            <flag name="bottomLeft" value="1" />
+            <flag name="bottomRight" value="2" />
+            <flag name="bottomCenter" value="3" />
+        </attr>
+
+        <attr name="lb_indicatorSize" format="dimension"/>
+        <attr name="lb_indicatorMargin" format="dimension"/>
+        <attr name="lb_indicatorSelect" format="reference"/>
+        <attr name="lb_indicatorUnSelect" format="reference"/>
+        <attr name="lb_indicatorParentMarginV" format="dimension"/>
+        <attr name="lb_indicatorParentMarginH" format="dimension"/>
+
+        <attr name="lb_indicatorStyle">
+            <enum name="normal" value="0"/>
+            <enum name="jd" value="1"/>
+            <enum name="pill" value="2"/>
+        </attr>
+
+    </declare-styleable>
+
+</resources>
