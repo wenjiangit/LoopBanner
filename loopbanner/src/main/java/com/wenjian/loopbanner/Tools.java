@@ -12,7 +12,7 @@ import android.util.Log;
  */
 class Tools {
 
-    private static boolean debug = true;
+    private static boolean debug = false;
 
     static void setDebug(boolean debug) {
         Tools.debug = debug;

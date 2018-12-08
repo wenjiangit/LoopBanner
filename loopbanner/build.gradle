@@ -22,7 +22,20 @@ android {
         }
     }
 
+    lintOptions {
+        abortOnError false
+    }
+
 }
+
+tasks.withType(Javadoc) {
+    options {
+        options.addStringOption('Xdoclint:none', '-quiet')
+        options.addStringOption('encoding', 'UTF-8')
+        options.addStringOption('charSet', 'UTF-8')
+    }
+}
+
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
