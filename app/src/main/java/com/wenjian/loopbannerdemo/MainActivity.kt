@@ -46,6 +46,7 @@ class MainActivity : AppCompatActivity() {
         override fun onBindView(holder: ViewHolder, data: BannerEntity, position: Int) {
             val image = holder.getView<ImageView>(R.id.iv_image)
             Glide.with(holder.context).load(data.url).into(image)
+            holder.setText(R.id.tv_title,data.title)
 
             holder.itemView.setOnClickListener {
                 Toast.makeText(holder.context, "position=$position", Toast.LENGTH_SHORT).show()

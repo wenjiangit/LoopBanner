@@ -29,7 +29,7 @@ public abstract class LoopAdapter<T> extends PagerAdapter {
     private List<T> mData;
     private int mLayoutId;
     private boolean mCanLoop = true;
-    private LoopBanner.OnPageClickListener mClickListener;
+    LoopBanner.OnPageClickListener mClickListener;
 
     public LoopAdapter(List<T> data, int layoutId) {
         mData = data;
@@ -66,7 +66,6 @@ public abstract class LoopAdapter<T> extends PagerAdapter {
             View convertView = onCreateView(container);
             holder = new ViewHolder(convertView);
             convertView.setTag(R.id.key_holder, holder);
-            addClickListenerIfNeed(dataPosition, convertView);
             onBindView(holder, mData.get(dataPosition), dataPosition);
         }
         return addViewSafely(container, holder.itemView);
@@ -90,19 +89,6 @@ public abstract class LoopAdapter<T> extends PagerAdapter {
         }
         container.addView(itemView);
         return itemView;
-    }
-
-    private void addClickListenerIfNeed(final int dataPosition, View convertView) {
-        if (mClickListener != null) {
-            convertView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mClickListener != null) {
-                        mClickListener.onPageClick(v, dataPosition);
-                    }
-                }
-            });
-        }
     }
 
     /**
@@ -142,6 +128,7 @@ public abstract class LoopAdapter<T> extends PagerAdapter {
      *
      * @param holder ViewHolder
      * @param data   数据
+     * @param position 数据真实位置
      */
     protected abstract void onBindView(ViewHolder holder, T data, int position);
 

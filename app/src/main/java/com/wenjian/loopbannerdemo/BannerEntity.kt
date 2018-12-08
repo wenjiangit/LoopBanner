@@ -6,4 +6,4 @@ package com.wenjian.loopbannerdemo
  *
  * @author jian.wen@ubtrobot.com
  */
-data class BannerEntity(val id: Int, val url: String)
+data class BannerEntity(val id: Int, val url: String,val title:String)

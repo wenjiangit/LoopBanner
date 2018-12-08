@@ -5,11 +5,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:cardUseCompatPadding="true"
-        app:cardBackgroundColor="@color/overlay_dark_50"
         app:cardCornerRadius="5dp"
         app:cardPreventCornerOverlap="false"
-        android:clipChildren="true"
-        android:layerType="hardware"
 >
 
     <ImageView
@@ -17,6 +14,16 @@
             android:scaleType="centerCrop"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
+
+    <TextView
+            android:id="@+id/tv_title"
+            android:layout_gravity="bottom"
+            android:text="@string/app_name"
+            android:padding="6dp"
+            android:textColor="@android:color/white"
+            android:background="@color/overlay_dark_50"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
 
 </android.support.v7.widget.CardView>
