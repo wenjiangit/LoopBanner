@@ -3,28 +3,44 @@
 
     <declare-styleable name="LoopBanner">
 
+        <!--page之间的间距-->
         <attr name="lb_pageMargin" format="dimension|reference" />
+        <!--是否无限轮播-->
         <attr name="lb_canLoop" format="boolean" />
+        <!--中间page离父布局的左右间距-->
         <attr name="lb_lrMargin" format="dimension|reference" />
+        <!--page的上间距-->
         <attr name="lb_topMargin" format="dimension|reference" />
+        <!--page的下间距-->
         <attr name="lb_bottomMargin" format="dimension|reference" />
+        <!--轮播周期-->
         <attr name="lb_interval" format="integer" />
+        <!--离屏缓存个数-->
         <attr name="lb_offsetPageLimit" format="integer" />
+        <!--page的上下左右间距，如果同时设置单独方向的间距，会被覆盖掉-->
         <attr name="lb_margin" format="dimension|reference" />
+
+        <!--是否显示指示器-->
         <attr name="lb_showIndicator" format="boolean" />
+        <!--指示器位置-->
         <attr name="lb_indicatorGravity">
             <flag name="bottomLeft" value="1" />
             <flag name="bottomRight" value="2" />
             <flag name="bottomCenter" value="3" />
         </attr>
-
+        <!--单个指示器大小-->
         <attr name="lb_indicatorSize" format="dimension"/>
-        <attr name="lb_indicatorMargin" format="dimension"/>
+        <!--单个指示器之间的间距-->
+        <attr name="lb_indicatorMargin" format="dimension|reference"/>
+        <!--选中的指示器的drawable资源-->
         <attr name="lb_indicatorSelect" format="reference"/>
+        <!--未选中的指示器的drawable资源-->
         <attr name="lb_indicatorUnSelect" format="reference"/>
-        <attr name="lb_indicatorParentMarginV" format="dimension"/>
-        <attr name="lb_indicatorParentMarginH" format="dimension"/>
-
+        <!--指示器容器垂直方向的间距-->
+        <attr name="lb_indicatorParentMarginV" format="dimension|reference"/>
+        <!--指示器容器水平方向的间距-->
+        <attr name="lb_indicatorParentMarginH" format="dimension|reference"/>
+        <!--指示器风格样式-->
         <attr name="lb_indicatorStyle">
             <enum name="normal" value="0"/>
             <enum name="jd" value="1"/>
