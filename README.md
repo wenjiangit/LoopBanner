@@ -192,7 +192,7 @@ lb1.setIndicatorStyle(LoopBanner.Style.PILL)
 </attr>
 ```
 
-每个属性都有详细注释，就不单独解释了。
+每个属性都有详细注释，并且提供对应的代码设置api，就不一一介绍了。
 
 ### 2.指示器位置和样式
 
