@@ -73,6 +73,9 @@ public class LoopBanner extends FrameLayout {
      * 每个page之间的间距
      */
     private int mPageMargin;
+    /**
+     * 当前选中位置
+     */
     private int mCurrentIndex;
     private Handler mHandler = new Handler();
     /**
@@ -228,11 +231,7 @@ public class LoopBanner extends FrameLayout {
 
     private void init() {
 
-        if (mLrMargin != 0) {
-            //对超出父布局的子View不进行剪切,禁用硬件加速
-            setClipChildren(false);
-            setLayerType(LAYER_TYPE_SOFTWARE, null);
-        }
+        compatLayerType();
 
         mViewPager = new ViewPager(getContext());
         setupViewPager(mViewPager);
@@ -400,6 +399,7 @@ public class LoopBanner extends FrameLayout {
         int marginDp = Tools.dp2px(getContext(), margin);
         mParams.setMargins(marginDp, marginDp, marginDp, marginDp);
         mLrMargin = mTopMargin = mBottomMargin = marginDp;
+        compatLayerType();
         mViewPager.setLayoutParams(mParams);
         adjustIndicator();
     }
@@ -439,9 +439,24 @@ public class LoopBanner extends FrameLayout {
     public void setLrMargin(int lrMargin) {
         checkAdapter("setLrMargin");
         mLrMargin = Tools.dp2px(getContext(), lrMargin);
+        compatLayerType();
         mParams.setMargins(mLrMargin, mTopMargin, mLrMargin, mBottomMargin);
         mViewPager.setLayoutParams(mParams);
         adjustIndicator();
+    }
+
+    /**
+     * 如果需要显示当前选中页前一个和后一个的一部分，则需要禁用硬件加速
+     * 并不对超出父view的子view进行裁剪
+     */
+    private void compatLayerType() {
+        if (mLrMargin > 0) {
+            setLayerType(LAYER_TYPE_SOFTWARE, null);
+            setClipChildren(false);
+        } else {
+            setLayerType(LAYER_TYPE_HARDWARE, null);
+            setClipChildren(true);
+        }
     }
 
     private void adjustIndicator() {
@@ -518,7 +533,6 @@ public class LoopBanner extends FrameLayout {
             stopInternal();
         }
     }
-
 
     /**
      * 强制停止轮播

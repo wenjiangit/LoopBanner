@@ -24,8 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="140dp"
             app:lb_indicatorStyle="jd"
-            app:lb_pageMargin="4dp"
-            app:lb_lrMargin="16dp">
+        >
 
     </com.wenjian.loopbanner.LoopBanner>
 

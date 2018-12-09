@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        //设置选中监听
         lb1.setOnPageSelectListener {
             Log.d(TAG, "select = $it")
         }
@@ -26,6 +26,10 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "position=$position", Toast.LENGTH_SHORT).show()
         }
 
+        //设置中心page的左右边距
+        lb2.setLrMargin(16)
+        //设置page之间的间距
+        lb2.pageMargin = 4
         //直接设置adapter,默认的itemView是ImageView
         lb2.adapter = object : LoopAdapter<String>(DataCenter.loadImages()) {
             override fun onBindView(holder: ViewHolder, data: String, position: Int) {
@@ -36,6 +40,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+
         //自定义布局
         lb3.adapter = MyAdapter(DataCenter.loadEntities())
 
