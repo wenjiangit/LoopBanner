@@ -8,11 +8,13 @@
 - 支持自定义页面点击事件
 - 支持自定义指示器样式
 
+基本上该有的都有，并且使用简单，只要你会用ListView或者RecyclerView
+
 ## 效果图
 
 ![](https://github.com/wenjiangit/LoopBanner/blob/master/resource/demo.gif)
 
-基本上该有的都有，并且使用简单，只要你会用ListView或者RecyclerView
+图片资源来源于鸿洋大神的[**wanandroid**](http://www.wanandroid.com/)
 
 ## 使用介绍
 
