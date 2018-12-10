@@ -4,29 +4,31 @@
     <declare-styleable name="LoopBanner">
 
         <!--page之间的间距-->
-        <attr name="lb_pageMargin" format="dimension|reference" />
+        <attr name="lb_pageMargin" format="dimension|reference"/>
         <!--是否无限轮播-->
-        <attr name="lb_canLoop" format="boolean" />
+        <attr name="lb_canLoop" format="boolean"/>
         <!--中间page离父布局的左右间距-->
-        <attr name="lb_lrMargin" format="dimension|reference" />
+        <attr name="lb_lrMargin" format="dimension|reference"/>
         <!--page的上间距-->
-        <attr name="lb_topMargin" format="dimension|reference" />
+        <attr name="lb_topMargin" format="dimension|reference"/>
         <!--page的下间距-->
-        <attr name="lb_bottomMargin" format="dimension|reference" />
+        <attr name="lb_bottomMargin" format="dimension|reference"/>
         <!--轮播周期-->
-        <attr name="lb_interval" format="integer" />
+        <attr name="lb_interval" format="integer"/>
         <!--离屏缓存个数-->
-        <attr name="lb_offsetPageLimit" format="integer" />
+        <attr name="lb_offsetPageLimit" format="integer"/>
         <!--page的上下左右间距，如果同时设置单独方向的间距，会被覆盖掉-->
-        <attr name="lb_margin" format="dimension|reference" />
+        <attr name="lb_margin" format="dimension|reference"/>
+        <!--设置左右page缩放比(0-1)-->
+        <attr name="lb_lrScale" format="float"/>
 
         <!--是否显示指示器-->
-        <attr name="lb_showIndicator" format="boolean" />
+        <attr name="lb_showIndicator" format="boolean"/>
         <!--指示器位置-->
         <attr name="lb_indicatorGravity">
-            <flag name="bottomLeft" value="1" />
-            <flag name="bottomRight" value="2" />
-            <flag name="bottomCenter" value="3" />
+            <flag name="bottomLeft" value="1"/>
+            <flag name="bottomRight" value="2"/>
+            <flag name="bottomCenter" value="3"/>
         </attr>
         <!--单个指示器大小-->
         <attr name="lb_indicatorSize" format="dimension"/>

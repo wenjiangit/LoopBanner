@@ -9,6 +9,7 @@ import android.graphics.drawable.StateListDrawable;
 import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -22,6 +23,7 @@ import android.widget.LinearLayout;
 import com.wenjian.loopbanner.indicator.IndicatorAdapter;
 import com.wenjian.loopbanner.indicator.JDIndicatorAdapter;
 import com.wenjian.loopbanner.indicator.SelectDrawableAdapter;
+import com.wenjian.loopbanner.transformer.ScalePageTransformer;
 
 import java.util.List;
 
@@ -92,6 +94,11 @@ public class LoopBanner extends FrameLayout {
      * 是否循环播放
      */
     private boolean mCanLoop;
+    /**
+     * 所有缩放
+     */
+    private float mLrScale;
+
     private FrameLayout.LayoutParams mParams;
     /**
      * 是否处于循环播放中
@@ -192,6 +199,7 @@ public class LoopBanner extends FrameLayout {
         mLrMargin = (int) a.getDimension(R.styleable.LoopBanner_lb_lrMargin, margin);
         mTopMargin = (int) a.getDimension(R.styleable.LoopBanner_lb_topMargin, margin);
         mBottomMargin = (int) a.getDimension(R.styleable.LoopBanner_lb_bottomMargin, margin);
+        mLrScale = a.getFloat(R.styleable.LoopBanner_lb_lrScale, 0f);
         //for indicator
         mIndicatorGravity = a.getInt(R.styleable.LoopBanner_lb_indicatorGravity, DEFAULT_GRAVITY);
         mIndicatorSize = (int) a.getDimension(R.styleable.LoopBanner_lb_indicatorSize, Tools.dp2px(context, DEFAULT_INDICATOR_SIZE));
@@ -274,6 +282,9 @@ public class LoopBanner extends FrameLayout {
     private void setupViewPager(ViewPager viewPager) {
         viewPager.setPageMargin(mPageMargin);
         viewPager.setOffscreenPageLimit(mOffscreenPageLimit);
+        if (mLrScale > 0 && mLrScale < 1) {
+            viewPager.setPageTransformer(false,new ScalePageTransformer(mLrScale));
+        }
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -526,6 +537,22 @@ public class LoopBanner extends FrameLayout {
      */
     public void setPageTransformer(ViewPager.PageTransformer pageTransformer) {
         mViewPager.setPageTransformer(false, pageTransformer);
+    }
+
+    /**
+     * 设置左右page的缩放比例
+     *
+     * @param scale 缩放比例(0-1)
+     */
+    public void setLrScale(@FloatRange(from = 0, to = 1.0f) float scale) {
+        this.setPageTransformer(new ScalePageTransformer(scale));
+    }
+
+    /**
+     * 开启缩放
+     */
+    public void enableScale() {
+        this.setPageTransformer(new ScalePageTransformer());
     }
 
     @Override

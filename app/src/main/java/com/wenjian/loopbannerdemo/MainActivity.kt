@@ -7,7 +7,9 @@ import android.widget.ImageView
 import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.wenjian.loopbanner.LoopAdapter
+import com.wenjian.loopbanner.transformer.ScalePageTransformer
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.view.*
 
 class MainActivity : AppCompatActivity() {
     companion object {
@@ -33,10 +35,12 @@ class MainActivity : AppCompatActivity() {
 //        lb1.setIndicatorStyle(LoopBanner.Style.PILL)
 
         //设置中心page的左右边距
-        lb2.setLrMargin(16)
+        lb2.setLrMargin(40)
         //设置page之间的间距
-        lb2.pageMargin = 4
+        lb2.pageMargin = 10
 
+        lb2.openDebug()
+        lb2.enableScale()
 
         //直接设置adapter,默认的itemView是ImageView
         lb2.adapter = object : LoopAdapter<String>(DataCenter.loadImages()) {
