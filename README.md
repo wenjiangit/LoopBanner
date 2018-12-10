@@ -371,6 +371,8 @@ public final class SelectDrawableAdapter implements IndicatorAdapter {
 
 观察了市面上大多数知名app后，发现并没有使用多么炫酷的切换效果，都是一般的平滑过度，所以这里也没有内置切换效果，不过开放了接口，有需求的同学可以自己设置。
 
+常见的切换效果参考[MagicViewPager](https://github.com/hongyangAndroid/MagicViewPager)
+
 ```java
 public void setPageTransformer(ViewPager.PageTransformer pageTransformer)
 ```
@@ -386,6 +388,8 @@ public void setPageTransformer(ViewPager.PageTransformer pageTransformer)
 [**glide**](https://github.com/bumptech/glide)(内置图片加载框架)
 
 [**wanandroid**](http://www.wanandroid.com/)(素材来源)
+
+[**MagicViewPager**](https://github.com/hongyangAndroid/MagicViewPager)(页面切换效果参考)
 
 ## 联系我
 

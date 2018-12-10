@@ -7,9 +7,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.wenjian.loopbanner.LoopAdapter
-import com.wenjian.loopbanner.transformer.ScalePageTransformer
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.activity_main.view.*
 
 class MainActivity : AppCompatActivity() {
     companion object {
@@ -39,7 +37,9 @@ class MainActivity : AppCompatActivity() {
         //设置page之间的间距
         lb2.pageMargin = 10
 
+        //开启调试模式,有关键日志输出
         lb2.openDebug()
+        //允许左右缩放,默认缩放比例为0.85
         lb2.enableScale()
 
         //直接设置adapter,默认的itemView是ImageView
