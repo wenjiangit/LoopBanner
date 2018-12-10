@@ -16,6 +16,8 @@
 
 图片资源来源于鸿洋大神的[**wanandroid**](http://www.wanandroid.com/)
 
+扫描二维码下载
+
 ![扫描二维码下载](https://github.com/wenjiangit/LoopBanner/blob/master/resource/download.png)
 
 [点击下载demo](https://fir.im/f68s)
@@ -41,7 +43,7 @@ allprojects {
 ```groovy
 dependencies {
     ...
-    implementation 'com.github.wenjiangit:LoopBanner:1.0.0'
+    implementation 'com.github.wenjiangit:LoopBanner:1.0.1'
 }
 ```
 
@@ -379,11 +381,11 @@ public void setPageTransformer(ViewPager.PageTransformer pageTransformer)
 
 ## 感谢
 
-[**BaseRecyclerViewAdapterHelper**](https://github.com/CymChad/BaseRecyclerViewAdapterHelper)
+[**BaseRecyclerViewAdapterHelper**](https://github.com/CymChad/BaseRecyclerViewAdapterHelper)(思想来源)
 
-[**glide**](https://github.com/bumptech/glide)
+[**glide**](https://github.com/bumptech/glide)(内置图片加载框架)
 
-[**wanandroid**](http://www.wanandroid.com/)
+[**wanandroid**](http://www.wanandroid.com/)(素材来源)
 
 ## 联系我
 
