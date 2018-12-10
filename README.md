@@ -241,7 +241,7 @@ lb1.setIndicatorStyle(LoopBanner.Style.PILL)
 
 注意:如果``drawable``资源设置了宽高,就会使用``drawable``的宽高,如下
 
-```
+```xml
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
 
     <solid android:color="?attr/colorAccent"/>
@@ -356,7 +356,7 @@ public final class SelectDrawableAdapter implements IndicatorAdapter {
 
 然后通过调用以下方法设置自己定义的指示器适配器即可,建议各种配置设置都放在``setAdapter``方法调用之前.
 
-```
+```java
     /**
      * 设置指示适配器
      *
