@@ -8,7 +8,7 @@
 - 支持自定义页面点击事件
 - 支持自定义指示器样式
 
-基本上该有的都有，并且使用简单，只要你会用ListView或者RecyclerView
+基本上该有的都有，并且使用简单，只要你会用``ListView``或者``RecyclerView``
 
 ## 效果图
 
@@ -219,6 +219,36 @@ lb1.setIndicatorStyle(LoopBanner.Style.PILL)
 
 ``lb_indicatorUnSelect``：未选中的drawable资源
 
+当然也可以通过代码设置,如下:
+
+```
+ /**
+     * 设置指示器资源
+     *
+     * @param selectRes   选中
+     * @param unSelectRes 未选中
+     */
+    public void setIndicatorResource(@DrawableRes int selectRes, @DrawableRes int unSelectRes) {
+        this.setIndicatorResource(selectRes, unSelectRes, true);
+    }
+```
+
+注意:如果``drawable``资源设置了宽高,就会使用``drawable``的宽高,如下
+
+```
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <solid android:color="?attr/colorAccent"/>
+
+    <size android:width="14dp" android:height="6dp"/>
+
+    <corners android:radius="5dp"/>
+
+</shape>
+```
+
+如果没有设置宽高,就会使用``<attr name="lb_indicatorSize" format="dimension"/>``属性值.
+
 这两个配合使用可以实现80%的效果，另外的20%需要通过以下方式实现
 
 实现``IndicatorAdapter``接口,每个方法的作用可以看注释
@@ -317,6 +347,19 @@ public final class SelectDrawableAdapter implements IndicatorAdapter {
 ```
 
 除此之外，还有一个``JDIndicatorAdapter``,这里就不贴代码了，感兴趣的可以自己看看。
+
+然后通过调用以下方法设置自己定义的指示器适配器即可,建议各种配置设置都放在``setAdapter``方法调用之前.
+
+```
+    /**
+     * 设置指示适配器
+     *
+     * @param indicatorAdapter IndicatorAdapter
+     */
+    public void setIndicatorAdapter(IndicatorAdapter indicatorAdapter) {
+        this.setIndicatorAdapter(indicatorAdapter, true);
+    }
+```
 
 ### 3.页面切换效果
 
