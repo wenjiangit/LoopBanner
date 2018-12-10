@@ -10,11 +10,15 @@
 
 基本上该有的都有，并且使用简单，只要你会用``ListView``或者``RecyclerView``
 
-## 效果图
+## 效果图和Demo下载
 
 ![](https://github.com/wenjiangit/LoopBanner/blob/master/resource/demo.gif)
 
 图片资源来源于鸿洋大神的[**wanandroid**](http://www.wanandroid.com/)
+
+![扫描二维码下载](https://github.com/wenjiangit/LoopBanner/blob/master/resource/download.png)
+
+[点击下载demo](https://fir.im/f68s)
 
 ## 使用介绍
 
