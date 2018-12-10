@@ -352,7 +352,7 @@ public class LoopBanner extends FrameLayout {
     }
 
     private void startInternal(boolean force) {
-        if (!mCanLoop) {
+        if (!mCanLoop || !checkAdapterAndDataSize()) {
             return;
         }
         if (force) {
@@ -366,6 +366,17 @@ public class LoopBanner extends FrameLayout {
                 inLoop = true;
             }
         }
+    }
+
+    /**
+     * 保证数据的长度大于1才轮播
+     */
+    private boolean checkAdapterAndDataSize() {
+        LoopAdapter adapter = getAdapter();
+        if (adapter != null) {
+            return adapter.getDataSize() > 1;
+        }
+        return false;
     }
 
     private void stopInternal() {
