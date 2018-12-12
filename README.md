@@ -1,3 +1,5 @@
+[![](https://jitpack.io/v/wenjiangit/LoopBanner.svg)](https://jitpack.io/#wenjiangit/LoopBanner)
+
 # LoopBanner
 一个简单好用的自动轮播控件,支持UI风格完全自定义
 
