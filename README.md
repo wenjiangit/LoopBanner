@@ -1,7 +1,7 @@
 [![](https://jitpack.io/v/wenjiangit/LoopBanner.svg)](https://jitpack.io/#wenjiangit/LoopBanner)
 
 # LoopBanner
-一个简单好用的自动轮播控件,支持UI风格完全自定义
+一个简单好用的超轻量的自动轮播控件,支持UI风格完全自定义
 
 ## 功能介绍
 
@@ -11,6 +11,8 @@
 - 支持自定义指示器样式
 
 基本上该有的都有，并且使用简单，只要你会用``ListView``或者``RecyclerView``
+
+如果对``LoopBanner``原理感兴趣可以查看[LoopBanner原理浅析](https://www.jianshu.com/p/a3f88f12ad1b)
 
 ## 效果图和Demo下载
 
