@@ -25,9 +25,9 @@ class MainActivity : AppCompatActivity() {
         lb1.setImages(DataCenter.loadImages()) { _, position ->
             Toast.makeText(this, "position=$position", Toast.LENGTH_SHORT).show()
         }
-
+        //仅仅设置图片资源
 //        lb1.setImages(DataCenter.loadImages())
-         //设置指示器风格
+         //设置指示器风格，有3种风格可选
 //        lb1.setIndicatorStyle(LoopBanner.Style.NORMAL)
 //        lb1.setIndicatorStyle(LoopBanner.Style.JD)
 //        lb1.setIndicatorStyle(LoopBanner.Style.PILL)

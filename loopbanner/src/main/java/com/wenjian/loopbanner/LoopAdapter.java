@@ -32,7 +32,7 @@ public abstract class LoopAdapter<T> extends PagerAdapter {
     LoopBanner.OnPageClickListener mClickListener;
 
     public LoopAdapter(List<T> data, int layoutId) {
-        mData = data;
+        mData = data == null ? new ArrayList<T>() : data;
         mLayoutId = layoutId;
     }
 
