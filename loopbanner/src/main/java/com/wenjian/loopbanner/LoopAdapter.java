@@ -25,14 +25,14 @@ import java.util.List;
 public abstract class LoopAdapter<T> extends PagerAdapter {
 
     private static final String TAG = "LoopAdapter";
-    private SparseArray<ViewHolder> mHolderMap = new SparseArray<>();
+    private final SparseArray<ViewHolder> mHolderMap = new SparseArray<>();
     private List<T> mData;
     private int mLayoutId;
     private boolean mCanLoop = true;
     LoopBanner.OnPageClickListener mClickListener;
 
     public LoopAdapter(List<T> data, int layoutId) {
-        mData = data;
+        mData = data == null ? new ArrayList<T>() : data;
         mLayoutId = layoutId;
     }
 
@@ -100,7 +100,7 @@ public abstract class LoopAdapter<T> extends PagerAdapter {
 
     private int computePosition(int position) {
         final int size = mData.size();
-        return size == 0 ? -1 : position % size;
+        return size == 0 ? 0 : position % size;
     }
 
     /**
@@ -126,8 +126,8 @@ public abstract class LoopAdapter<T> extends PagerAdapter {
     /**
      * 为每个page绑定数据
      *
-     * @param holder ViewHolder
-     * @param data   数据
+     * @param holder   ViewHolder
+     * @param data     数据
      * @param position 数据真实位置
      */
     protected abstract void onBindView(ViewHolder holder, T data, int position);
@@ -165,7 +165,7 @@ public abstract class LoopAdapter<T> extends PagerAdapter {
         }
 
         @SuppressWarnings("unchecked")
-        public <T> T getView(@IdRes int viewId) {
+        public <T extends View> T getView(@IdRes int viewId) {
             View view = mViewList.get(viewId);
             if (view == null) {
                 view = itemView.findViewById(viewId);

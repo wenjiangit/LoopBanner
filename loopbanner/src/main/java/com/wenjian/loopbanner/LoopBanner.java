@@ -283,7 +283,7 @@ public class LoopBanner extends FrameLayout {
         viewPager.setPageMargin(mPageMargin);
         viewPager.setOffscreenPageLimit(mOffscreenPageLimit);
         if (mLrScale > 0 && mLrScale < 1) {
-            viewPager.setPageTransformer(false,new ScalePageTransformer(mLrScale));
+            viewPager.setPageTransformer(false, new ScalePageTransformer(mLrScale));
         }
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override

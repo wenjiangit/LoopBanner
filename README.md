@@ -157,7 +157,7 @@ lb1.setIndicatorStyle(LoopBanner.Style.PILL)
 
 到此为止，经过以上的设置已经可以实现市场上大部分的效果了。
 
-## 补充说明
+## 高级设置
 
 这部分适用于对于UI效果或者指示器风格有更高要求的人
 
@@ -209,7 +209,7 @@ lb1.setIndicatorStyle(LoopBanner.Style.PILL)
 </attr>
 ```
 
-每个属性都有详细注释，并且提供对应的代码设置api，就不一一介绍了。
+每个属性都有详细注释，并且提供对应的代码设置api，建议通过api设置属性时,最好放在``setAdapter``方法调用之前,否则可能抛出异常.
 
 ### 2.指示器位置和样式
 
@@ -243,7 +243,7 @@ lb1.setIndicatorStyle(LoopBanner.Style.PILL)
     }
 ```
 
-注意:如果``drawable``资源设置了宽高,就会使用``drawable``的宽高,如下
+**注意**:如果``drawable``资源设置了宽高,就会使用``drawable``的宽高,如下
 
 ```xml
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
@@ -306,7 +306,7 @@ public interface IndicatorAdapter {
 }
 ```
 
-以下是默认的实现``SelectDrawableAdapter``，大家可以参考下
+以下是默认的实现``SelectDrawableAdapter``，通过``view``的``select``状态切换指示器状态,大家可以参考下
 
 ```java
 public final class SelectDrawableAdapter implements IndicatorAdapter {

@@ -12,6 +12,8 @@
             android:id="@+id/lb1"
             android:layout_width="match_parent"
             android:layout_height="130dp"
+            app:lb_indicatorSelect="@drawable/banner_indicator_select"
+            app:lb_indicatorUnSelect="@drawable/banner_indicator_unselect"
             app:lb_indicatorStyle="normal"
             app:lb_pageMargin="4dp"
             app:lb_lrMargin="16dp"
@@ -23,8 +25,7 @@
             android:layout_marginTop="20dp"
             android:layout_width="match_parent"
             android:layout_height="140dp"
-            app:lb_indicatorStyle="jd"
-        >
+            app:lb_indicatorStyle="jd">
 
     </com.wenjian.loopbanner.LoopBanner>
 

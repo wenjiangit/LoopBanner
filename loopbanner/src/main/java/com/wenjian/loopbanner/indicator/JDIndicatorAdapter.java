@@ -50,7 +50,7 @@ public class JDIndicatorAdapter implements IndicatorAdapter {
     @Override
     public void applySelectState(View prev, View current, boolean reverse) {
         prev.setPivotX(0);
-        prev.setPivotY(prev.getHeight() / 2);
+        prev.setPivotY(prev.getHeight() >> 1);
         if (reverse) {
             current.animate().scaleX(1).setDuration(200).start();
         } else {
@@ -71,7 +71,7 @@ public class JDIndicatorAdapter implements IndicatorAdapter {
             for (int i = 0; i < childCount; i++) {
                 View childAt = container.getChildAt(i);
                 childAt.setPivotX(0);
-                childAt.setPivotY(childAt.getHeight() / 2);
+                childAt.setPivotY(childAt.getHeight() >> 1);
                 //第一个
                 if (position == 0) {
                     childAt.animate().scaleX(1).setDuration(200).start();
