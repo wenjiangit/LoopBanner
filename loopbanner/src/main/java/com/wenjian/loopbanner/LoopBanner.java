@@ -737,6 +737,20 @@ public class LoopBanner extends FrameLayout {
         this.setIndicatorStyle(style, true);
     }
 
+    /**
+     * 设置page切换时长
+     *
+     * @param duration 时长
+     */
+    public void setTransformDuration(int duration) {
+        if (duration < 0) {
+            duration = 0;
+        }
+        LoopScroller scroller = new LoopScroller(getContext());
+        scroller.setScrollerDuration(duration);
+        scroller.linkViewPager(mViewPager);
+    }
+
     public enum Style {
         /**
          * 京东
