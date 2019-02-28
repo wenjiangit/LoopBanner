@@ -1,4 +1,5 @@
-[![](https://jitpack.io/v/wenjiangit/LoopBanner.svg)](https://jitpack.io/#wenjiangit/LoopBanner)
+
+[![](https://www.jitpack.io/v/wenjiangit/LoopBanner.svg)](https://www.jitpack.io/#wenjiangit/LoopBanner)
 
 # LoopBanner
 一个简单好用的超轻量的自动轮播控件,支持UI风格完全自定义
@@ -47,7 +48,7 @@ allprojects {
 ```groovy
 dependencies {
     ...
-    implementation 'com.github.wenjiangit:LoopBanner:1.0.1'
+    implementation 'com.github.wenjiangit:LoopBanner:1.0.3'
 }
 ```
 
@@ -384,6 +385,12 @@ public void setPageTransformer(ViewPager.PageTransformer pageTransformer)
 ### 4.图片圆角和硬件加速
 
 如果需要图片或者``CardView``的圆角效果，就不要设置``lb_lrMargin``,否则你设置任何圆角效果都是毫无意义的，这关系到硬件加速，具体原因还不清楚。
+
+### 5.页面切换速度
+
+```
+public void setTransformDuration(int duration) 
+```
 
 ## 感谢
 

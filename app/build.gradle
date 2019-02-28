@@ -33,5 +33,5 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation "com.github.bumptech.glide:glide:3.7.0"
     implementation project(':loopbanner')
-//    implementation 'com.github.wenjiangit:LoopBanner:1.0.2'
+//    implementation 'com.github.wenjiangit:LoopBanner:1.0.3'
 }
