@@ -14,8 +14,11 @@ class Tools {
 
     private static boolean debug = false;
 
+    private static final String TAG = "LoopBanner";
+
     static void setDebug(boolean debug) {
         Tools.debug = debug;
+        logD(TAG, "version: 1.0.5");
     }
 
     static int dp2px(Context context, int dpValue) {
@@ -49,7 +52,8 @@ class Tools {
      * @return the non-null reference that was validated
      * @throws NullPointerException if {@code reference} is null
      */
-    static @NonNull <T> T checkNotNull(final T reference) {
+    static @NonNull
+    <T> T checkNotNull(final T reference) {
         if (reference == null) {
             throw new NullPointerException();
         }
@@ -66,7 +70,8 @@ class Tools {
      * @return the non-null reference that was validated
      * @throws NullPointerException if {@code reference} is null
      */
-    static @NonNull <T> T checkNotNull(final T reference, final Object errorMessage) {
+    static @NonNull
+    <T> T checkNotNull(final T reference, final Object errorMessage) {
         if (reference == null) {
             throw new NullPointerException(String.valueOf(errorMessage));
         }

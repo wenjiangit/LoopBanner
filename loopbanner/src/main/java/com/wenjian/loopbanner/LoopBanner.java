@@ -156,7 +156,7 @@ public class LoopBanner extends FrameLayout {
             final int dataSize = adapter.getDataSize();
             if (dataSize > 1) {
                 createIndicatorIfNeed(dataSize);
-                setProperIndex(dataSize, mCurrentIndex);
+//                setProperIndex(dataSize);
                 startInternal(true);
             }
         }
@@ -231,7 +231,8 @@ public class LoopBanner extends FrameLayout {
     }
 
 
-    private void setProperIndex(int dataSize, int curIndex) {
+    private void setProperIndex(int dataSize) {
+        int curIndex = Integer.MAX_VALUE / 2;
         Tools.logI(TAG, "oldIndex: " + curIndex);
         int ret = Math.round(curIndex * 1.0f / dataSize + 0.5f) * dataSize - 1;
         mCurrentIndex = ret >= 0 ? ret : 0;
@@ -371,7 +372,7 @@ public class LoopBanner extends FrameLayout {
         if (force) {
             if (mCurrentIndex == -1) {
                 //如果是刚开始自动轮播，先将页面定位到合适的位置
-                setProperIndex(getAdapter().getDataSize(), Integer.MAX_VALUE / 2);
+                setProperIndex(getAdapter().getDataSize());
                 mViewPager.setCurrentItem(mCurrentIndex);
             }
             mHandler.removeCallbacks(mLoopRunnable);
