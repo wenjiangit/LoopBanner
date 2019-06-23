@@ -57,12 +57,17 @@ class MainActivity : AppCompatActivity() {
         }
 
         //自定义布局
-        lb3.adapter = MyAdapter(DataCenter.loadEntities())
+        lb3.adapter = MyAdapter()
 
     }
 
+    override fun onStart() {
+        super.onStart()
+        lb3.adapter?.setNewData(DataCenter.loadEntities())
+    }
 
-    class MyAdapter(data: List<BannerEntity>) : LoopAdapter<BannerEntity>(data, R.layout.lay_banner_item) {
+
+    class MyAdapter : LoopAdapter<BannerEntity>(R.layout.lay_banner_item) {
         override fun onBindView(holder: ViewHolder, data: BannerEntity, position: Int) {
             val image = holder.getView<ImageView>(R.id.iv_image)
             Glide.with(holder.context).load(data.url).into(image)
