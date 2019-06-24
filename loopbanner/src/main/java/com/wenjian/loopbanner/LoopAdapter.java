@@ -30,6 +30,7 @@ public abstract class LoopAdapter<T> extends PagerAdapter {
     private int mLayoutId;
     private boolean mCanLoop = true;
     LoopBanner.OnPageClickListener mClickListener;
+    private boolean mAlwaysRebind = false;
 
     public LoopAdapter(List<T> data, int layoutId) {
         mData = data == null ? new ArrayList<T>() : data;
@@ -67,8 +68,35 @@ public abstract class LoopAdapter<T> extends PagerAdapter {
             holder = new ViewHolder(convertView);
             convertView.setTag(R.id.key_holder, holder);
             onBindView(holder, mData.get(dataPosition), dataPosition);
+        } else {
+            rebindIfNeed(holder, dataPosition);
         }
         return addViewSafely(container, holder.itemView);
+    }
+
+    /**
+     * 在某些极端情况下重新执行onBindView，避免图片加载失败后一直显示白屏
+     *
+     * @param holder   ViewHolder
+     * @param position 真实数据位置
+     */
+    private void rebindIfNeed(ViewHolder holder, int position) {
+        if (mAlwaysRebind){
+            onBindView(holder, mData.get(position), position);
+            return;
+        }
+        SparseArray<View> viewList = holder.mViewList;
+        for (int i = 0; i < viewList.size(); i++) {
+            View view = viewList.valueAt(i);
+            if (view instanceof ImageView) {
+                Drawable drawable = ((ImageView) view).getDrawable();
+                if (drawable == null) {
+                    Tools.logI(TAG, "call onBindView again at " + position);
+                    onBindView(holder, mData.get(position), position);
+                    break;
+                }
+            }
+        }
     }
 
     @Override
@@ -142,6 +170,14 @@ public abstract class LoopAdapter<T> extends PagerAdapter {
         mHolderMap.clear();
         notifyDataSetChanged();
     }
+
+    /**
+     * 只缓存view，每次都重新bind数据
+     */
+    public final void alwaysRebind(){
+        this.mAlwaysRebind = true;
+    }
+
 
     int getDataPosition(int position) {
         return computePosition(position);
