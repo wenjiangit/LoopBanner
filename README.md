@@ -48,7 +48,7 @@ allprojects {
 ```groovy
 dependencies {
     ...
-    implementation 'com.github.wenjiangit:LoopBanner:1.0.3'
+    implementation 'com.github.wenjiangit:LoopBanner:1.1.1'
 }
 ```
 
