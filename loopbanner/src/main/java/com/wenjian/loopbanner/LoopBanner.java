@@ -91,6 +91,13 @@ public class LoopBanner extends FrameLayout {
             Tools.logI(TAG, "setCurrentItem" + mCurrentIndex);
         }
     };
+
+
+    /**
+     * 是否自动轮播
+     */
+    private boolean mAutoLoop = true;
+
     /**
      * 是否循环播放
      */
@@ -232,7 +239,7 @@ public class LoopBanner extends FrameLayout {
 
     private void setProperIndex(int dataSize, int curIndex) {
         Tools.logI(TAG, "oldIndex: " + curIndex);
-        int ret = Math.round(curIndex * 1.0f / dataSize + 0.5f) * dataSize - 1;
+        int ret = Math.round(curIndex * 1.0f / dataSize + 0.5f) * dataSize;
         mCurrentIndex = ret >= 0 ? ret : 0;
         Tools.logI(TAG, "mCurrentIndex: " + mCurrentIndex);
     }
@@ -371,24 +378,13 @@ public class LoopBanner extends FrameLayout {
      */
     @SuppressWarnings("ConstantConditions")
     private void startInternal(boolean force, boolean resume) {
-        if (!mCanLoop || !checkAdapterAndDataSize()) {
+        if (!mAutoLoop || !checkAdapterAndDataSize()) {
             return;
         }
         if (force) {
             mHandler.removeCallbacks(mLoopRunnable);
-            final LoopAdapter adapter = getAdapter();
             if (mCurrentIndex == -1 || !resume) {
-                //为了避免setCurrentItem过大导致ANR
-                this.removeView(mViewPager);
-                //如果是刚开始自动轮播，先将页面定位到合适的位置
-                if (mCurrentIndex == -1) {
-                    setProperIndex(adapter.getDataSize(), Integer.MAX_VALUE / 2);
-                } else {
-                    setProperIndex(adapter.getDataSize(), mCurrentIndex);
-                }
-                mViewPager.setAdapter(adapter);
-                mViewPager.setCurrentItem(mCurrentIndex);
-                this.addView(mViewPager, 0);
+                seekToPosition(mCurrentIndex);
             }
             mHandler.postDelayed(mLoopRunnable, 200);
             inLoop = true;
@@ -399,6 +395,29 @@ public class LoopBanner extends FrameLayout {
                 inLoop = true;
             }
         }
+    }
+
+    /**
+     * 定位到合适的位置
+     *
+     * @param position 位置
+     */
+    private void seekToPosition(int position) {
+        if (!mCanLoop) {
+            return;
+        }
+        final LoopAdapter adapter = getAdapter();
+        //为了避免setCurrentItem过大导致ANR
+        this.removeView(mViewPager);
+        //如果是刚开始自动轮播，先将页面定位到合适的位置
+        if (position == -1) {
+            setProperIndex(adapter.getDataSize(), Integer.MAX_VALUE / 2);
+        } else {
+            setProperIndex(adapter.getDataSize(), position);
+        }
+        mViewPager.setAdapter(adapter);
+        mViewPager.setCurrentItem(mCurrentIndex);
+        this.addView(mViewPager, 0);
     }
 
     /**
@@ -599,7 +618,7 @@ public class LoopBanner extends FrameLayout {
      */
     public void forceStop() {
         stopInternal();
-        mCanLoop = false;
+        mAutoLoop = false;
     }
 
     /**
@@ -613,6 +632,8 @@ public class LoopBanner extends FrameLayout {
         if (mIndicatorContainer == null || dataSize <= 1) {
             return;
         }
+
+        seekToPosition(-1);
 
         mIndicatorContainer.removeAllViews();
 
@@ -646,6 +667,16 @@ public class LoopBanner extends FrameLayout {
     public LoopAdapter getAdapter() {
         PagerAdapter adapter = mViewPager.getAdapter();
         return adapter == null ? null : (LoopAdapter) adapter;
+    }
+
+
+    /**
+     * 设置自动轮播
+     *
+     * @param autoLoop 是否自动轮播
+     */
+    public void setAutoLoop(boolean autoLoop) {
+        this.mAutoLoop = autoLoop;
     }
 
     /**

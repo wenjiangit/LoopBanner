@@ -81,7 +81,7 @@ public abstract class LoopAdapter<T> extends PagerAdapter {
      * @param position 真实数据位置
      */
     private void rebindIfNeed(ViewHolder holder, int position) {
-        if (mAlwaysRebind){
+        if (mAlwaysRebind || holder.itemView instanceof ImageView) {
             onBindView(holder, mData.get(position), position);
             return;
         }
@@ -101,7 +101,7 @@ public abstract class LoopAdapter<T> extends PagerAdapter {
 
     @Override
     public final void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-        container.removeView((View) object);
+//        container.removeView((View) object);
         mHolderMap.put(computePosition(position), (ViewHolder) ((View) object).getTag(R.id.key_holder));
     }
 
@@ -174,7 +174,7 @@ public abstract class LoopAdapter<T> extends PagerAdapter {
     /**
      * 只缓存view，每次都重新bind数据
      */
-    public final void alwaysRebind(){
+    public final void alwaysRebind() {
         this.mAlwaysRebind = true;
     }
 
