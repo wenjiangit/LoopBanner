@@ -28,6 +28,8 @@ class MainActivity : AppCompatActivity() {
         //设置切换时长
         lb1.setTransformDuration(1000)
 
+        lb1.adapter?.alwaysRebind()
+
         lb1.setAutoLoop(false)
 
         //仅仅设置图片资源

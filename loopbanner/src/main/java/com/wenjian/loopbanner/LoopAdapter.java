@@ -81,7 +81,7 @@ public abstract class LoopAdapter<T> extends PagerAdapter {
      * @param position 真实数据位置
      */
     private void rebindIfNeed(ViewHolder holder, int position) {
-        if (mAlwaysRebind || holder.itemView instanceof ImageView) {
+        if (mAlwaysRebind) {
             onBindView(holder, mData.get(position), position);
             return;
         }
