@@ -404,8 +404,10 @@ public void setTransformDuration(int duration)
 
 ## 联系我
 
->qq:824636515
->
->邮箱：824636515@qq.com
+QQ群
+
+![qq交流群](https://github.com/wenjiangit/LoopBanner/blob/master/resource/qq_group.jpg)
+
+邮箱：824636515@qq.com
 
 
