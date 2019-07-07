@@ -382,13 +382,27 @@ public final class SelectDrawableAdapter implements IndicatorAdapter {
 public void setPageTransformer(ViewPager.PageTransformer pageTransformer)
 ```
 
-### 4.图片圆角和硬件加速
+### 4.CardView圆角和硬件加速
 
-如果需要图片或者``CardView``的圆角效果，就不要设置``lb_lrMargin``,否则你设置任何圆角效果都是毫无意义的，这关系到硬件加速，具体原因还不清楚。
+如果需要CardView``的圆角效果，就不要设置``lb_lrMargin``,否则你设置任何圆角效果都是毫无意义的，这关系到硬件加速，具体原因还不清楚。但是可以使用Glide的圆角转换功能设置圆角，具体如下：
 
-### 5.页面切换速度
-
+```kotlin
+val itemView = holder.itemView as ImageView
+Glide.with(holder.context)
+    .load(data)
+    .apply(
+        //实现图片圆角
+        RequestOptions()
+            .transforms(
+                CenterCrop(), RoundedCorners(20)
+            )
+    )
+    .into(itemView)
 ```
+
+### 5.设置页面切换时间来控制切换动画快慢
+
+```java
 public void setTransformDuration(int duration) 
 ```
 
