@@ -156,15 +156,7 @@ public class LoopBanner extends FrameLayout {
         @Override
         public void onChanged() {
             Tools.logI(TAG, "onChanged");
-            LoopAdapter adapter = getAdapter();
-            if (adapter == null) {
-                return;
-            }
-            final int dataSize = adapter.getDataSize();
-            if (dataSize > 1) {
-                createIndicatorIfNeed(dataSize);
-                startInternal(true, false);
-            }
+            restoreInitState();
         }
 
         @Override
@@ -172,6 +164,16 @@ public class LoopBanner extends FrameLayout {
             Tools.logI(TAG, "onInvalidated");
         }
     };
+
+    /**
+     * 恢复初始状态
+     */
+    private void restoreInitState() {
+        createIndicatorIfNeed();
+        seekToPosition(-1);
+        startInternal(true, false);
+    }
+
     /**
      * mIndicatorContainer相对于父容器的垂直方向间距
      */
@@ -254,9 +256,9 @@ public class LoopBanner extends FrameLayout {
         mParams.setMargins(mLrMargin, mTopMargin, mLrMargin, mBottomMargin);
         this.addView(mViewPager, mParams);
 
-        if (mShowIndicator) {
-            initIndicatorContainer();
-        }
+//        if (mShowIndicator) {
+//            initIndicatorContainer();
+//        }
     }
 
     private void initIndicatorContainer() {
@@ -407,6 +409,9 @@ public class LoopBanner extends FrameLayout {
             return;
         }
         final LoopAdapter adapter = getAdapter();
+        if (adapter == null) {
+            return;
+        }
         //为了避免setCurrentItem过大导致ANR
         this.removeView(mViewPager);
         //如果是刚开始自动轮播，先将页面定位到合适的位置
@@ -562,6 +567,22 @@ public class LoopBanner extends FrameLayout {
         return mInterval;
     }
 
+
+    /**
+     * 设置当前位置
+     *
+     * @param position
+     */
+    public void setCurrentItem(int position) {
+        final LoopAdapter adapter = getAdapter();
+        if (adapter == null) {
+            return;
+        }
+        final int dataPosition = adapter.getDataPosition(mCurrentIndex);
+        int del = position - dataPosition;
+        mViewPager.setCurrentItem(mCurrentIndex + del);
+    }
+
     /**
      * 设置轮播间隔时间
      *
@@ -625,19 +646,26 @@ public class LoopBanner extends FrameLayout {
      * 强制开始轮播，适配某些机型自动轮播失效的时候需要手动调用该函数
      */
     public void forceStart() {
+        mAutoLoop = true;
         startInternal(true, false);
     }
 
-    private void createIndicatorIfNeed(int dataSize) {
-        if (mIndicatorContainer == null || dataSize <= 1) {
+    private void createIndicatorIfNeed() {
+        if (!mShowIndicator || !checkAdapterAndDataSize()) {
+            if (mIndicatorContainer != null) {
+                this.removeView(mIndicatorContainer);
+                mIndicatorContainer = null;
+            }
             return;
         }
-
-        seekToPosition(-1);
+        //need show indicator
+        if (mIndicatorContainer == null) {
+            initIndicatorContainer();
+        }
 
         mIndicatorContainer.removeAllViews();
 
-        for (int i = 0; i < dataSize; i++) {
+        for (int i = 0; i < getAdapter().getDataSize(); i++) {
             mIndicatorAdapter.addIndicator(mIndicatorContainer, makeDrawable(), mIndicatorSize, mIndicatorMargin);
         }
         updateIndicators(0, -1);
@@ -685,10 +713,11 @@ public class LoopBanner extends FrameLayout {
      * @param adapter LoopAdapter
      */
     public void setAdapter(LoopAdapter<?> adapter) {
+        Tools.checkNotNull(adapter, "adapter = null");
         adapter.setCanLoop(mCanLoop);
         adapter.registerDataSetObserver(mDataSetObserver);
         mViewPager.setAdapter(adapter);
-        createIndicatorIfNeed(adapter.getDataSize());
+        restoreInitState();
     }
 
     /**
@@ -711,18 +740,19 @@ public class LoopBanner extends FrameLayout {
      *
      * @param enable 是否可用
      */
+    @Deprecated
     public void enableIndicator(boolean enable) {
-        this.mShowIndicator = enable;
-        if (enable) {
-            if (mIndicatorContainer == null) {
-                initIndicatorContainer();
-            }
-        } else {
-            if (mIndicatorContainer != null) {
-                this.removeView(mIndicatorContainer);
-                mIndicatorContainer = null;
-            }
-        }
+        this.showIndicator(enable);
+    }
+
+    /**
+     * 是否显示指示器
+     *
+     * @param show 显示与否
+     */
+    public void showIndicator(boolean show) {
+        this.mShowIndicator = show;
+        createIndicatorIfNeed();
     }
 
     private void setIndicatorAdapter(IndicatorAdapter indicatorAdapter, boolean byeUser) {
