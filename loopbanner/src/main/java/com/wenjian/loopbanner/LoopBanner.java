@@ -44,7 +44,7 @@ public class LoopBanner extends FrameLayout {
     private static final int DEFAULT_INDICATOR_SIZE = 6;
     private static final int DEFAULT_INDICATOR_MARGIN = 3;
     private static final int DEFAULT_INDICATOR_MARGIN_TO_PARENT = 16;
-    private static final long TOUCH_DELAY = 4000;
+    private static final long TOUCH_DELAY = 4000L;
     private static final String TAG = "LoopBanner";
 
     /**
@@ -386,7 +386,7 @@ public class LoopBanner extends FrameLayout {
             if (mCurrentIndex == -1 || !resume) {
                 seekToPosition(mCurrentIndex);
             }
-            mHandler.postDelayed(mLoopRunnable, 200);
+            mHandler.postDelayed(mLoopRunnable, mInterval);
             inLoop = true;
         } else {
             if (!inLoop) {
