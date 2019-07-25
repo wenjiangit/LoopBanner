@@ -192,12 +192,17 @@ public class LoopBanner extends FrameLayout {
     }
 
     public LoopBanner(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-        this(context, attrs, defStyleAttr, 0);
+        super(context, attrs, defStyleAttr);
+        initAttr(context, attrs, defStyleAttr, 0);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public LoopBanner(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        initAttr(context, attrs, defStyleAttr, defStyleRes);
+    }
+
+    private void initAttr(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.LoopBanner, defStyleAttr, defStyleRes);
         mCanLoop = a.getBoolean(R.styleable.LoopBanner_lb_canLoop, true);
         mShowIndicator = a.getBoolean(R.styleable.LoopBanner_lb_showIndicator, true);
@@ -222,6 +227,7 @@ public class LoopBanner extends FrameLayout {
         a.recycle();
         init();
     }
+
 
     private void handleIndicatorStyle(int style) {
         Style s;
@@ -430,10 +436,10 @@ public class LoopBanner extends FrameLayout {
      */
     private boolean checkAdapterAndDataSize() {
         LoopAdapter adapter = getAdapter();
-        if (adapter != null) {
-            return adapter.getDataSize() > 1;
+        if (adapter == null) {
+            return false;
         }
-        return false;
+        return adapter.getDataSize() > 1;
     }
 
     private void stopInternal() {
@@ -713,7 +719,7 @@ public class LoopBanner extends FrameLayout {
      * @param adapter LoopAdapter
      */
     public void setAdapter(LoopAdapter<?> adapter) {
-        Tools.checkNotNull(adapter, "adapter = null");
+        Tools.checkNotNull(adapter, "adapter == null");
         adapter.setCanLoop(mCanLoop);
         adapter.registerDataSetObserver(mDataSetObserver);
         mViewPager.setAdapter(adapter);
