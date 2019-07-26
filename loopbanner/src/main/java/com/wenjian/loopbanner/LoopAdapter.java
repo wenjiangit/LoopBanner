@@ -101,7 +101,7 @@ public abstract class LoopAdapter<T> extends PagerAdapter {
 
     @Override
     public final void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-        container.removeView((View) object);
+//         container.removeView((View) object);
         mHolderMap.put(computePosition(position), (ViewHolder) ((View) object).getTag(R.id.key_holder));
     }
 
