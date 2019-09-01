@@ -3,15 +3,19 @@ package com.wenjian.loopbanner;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.*;
-import android.support.v4.view.PagerAdapter;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +26,7 @@ import java.util.List;
  *
  * @author jian.wen@ubtrobot.com
  */
-public abstract class LoopAdapter<T> extends PagerAdapter {
+public abstract class LoopAdapter<T> extends RecyclerView.Adapter<LoopAdapter.ViewHolder> {
 
     private static final String TAG = "LoopAdapter";
     private final SparseArray<ViewHolder> mHolderMap = new SparseArray<>();
@@ -30,7 +34,8 @@ public abstract class LoopAdapter<T> extends PagerAdapter {
     private int mLayoutId;
     private boolean mCanLoop = true;
     LoopBanner.OnPageClickListener mClickListener;
-    private boolean mAlwaysRebind = false;
+
+    private AdapterHelper mHelper;
 
     public LoopAdapter(List<T> data, int layoutId) {
         mData = data == null ? new ArrayList<T>() : data;
@@ -49,75 +54,36 @@ public abstract class LoopAdapter<T> extends PagerAdapter {
         this(new ArrayList<T>(), -1);
     }
 
-    @Override
-    public final int getCount() {
-        final int size = mData.size();
-        if (size != 0) {
-            return mCanLoop ? Integer.MAX_VALUE : size;
-        }
-        return 0;
+    void setHelper(AdapterHelper helper) {
+        this.mHelper = helper;
     }
 
     @NonNull
     @Override
-    public final Object instantiateItem(@NonNull ViewGroup container, int position) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        final View view = onCreateView(parent);
+        mHelper.onCreateViewHolder(parent, view);
+        return new ViewHolder(view);
+    }
+
+
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        mHelper.onBindViewHolder(holder);
         final int dataPosition = computePosition(position);
-        ViewHolder holder = mHolderMap.get(dataPosition);
-        if (holder == null) {
-            View convertView = onCreateView(container);
-            holder = new ViewHolder(convertView);
-            convertView.setTag(R.id.key_holder, holder);
-            onBindView(holder, mData.get(dataPosition), dataPosition);
-        } else {
-            rebindIfNeed(holder, dataPosition);
-        }
-        return addViewSafely(container, holder.itemView);
+        onBindView(holder, mData.get(dataPosition), dataPosition);
     }
 
-    /**
-     * 在某些极端情况下重新执行onBindView，避免图片加载失败后一直显示白屏
-     *
-     * @param holder   ViewHolder
-     * @param position 真实数据位置
-     */
-    private void rebindIfNeed(ViewHolder holder, int position) {
-        if (mAlwaysRebind){
-            onBindView(holder, mData.get(position), position);
-            return;
-        }
-        SparseArray<View> viewList = holder.mViewList;
-        for (int i = 0; i < viewList.size(); i++) {
-            View view = viewList.valueAt(i);
-            if (view instanceof ImageView) {
-                Drawable drawable = ((ImageView) view).getDrawable();
-                if (drawable == null) {
-                    Tools.logI(TAG, "call onBindView again at " + position);
-                    onBindView(holder, mData.get(position), position);
-                    break;
-                }
-            }
-        }
-    }
 
     @Override
-    public final void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-        container.removeView((View) object);
-        mHolderMap.put(computePosition(position), (ViewHolder) ((View) object).getTag(R.id.key_holder));
-    }
-
-    @Override
-    public final boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
-        return view == object;
-    }
-
-    private View addViewSafely(ViewGroup container, View itemView) {
-        ViewParent parent = itemView.getParent();
-        if (parent != null) {
-            ((ViewGroup) parent).removeView(itemView);
+    public int getItemCount() {
+        final int size = mData.size();
+        if (size != 0) {
+            return mCanLoop ? Integer.MAX_VALUE : size;
         }
-        container.addView(itemView);
-        return itemView;
+        return size;
     }
+
 
     /**
      * 获取真实的数据个数
@@ -171,14 +137,6 @@ public abstract class LoopAdapter<T> extends PagerAdapter {
         notifyDataSetChanged();
     }
 
-    /**
-     * 只缓存view，每次都重新bind数据
-     */
-    public final void alwaysRebind(){
-        this.mAlwaysRebind = true;
-    }
-
-
     int getDataPosition(int position) {
         return computePosition(position);
     }
@@ -191,13 +149,12 @@ public abstract class LoopAdapter<T> extends PagerAdapter {
         mCanLoop = canLoop;
     }
 
-    public static final class ViewHolder {
-        public final View itemView;
+    public static final class ViewHolder extends RecyclerView.ViewHolder {
 
-        private SparseArray<View> mViewList = new SparseArray<>();
+        private final SparseArray<View> mViewList = new SparseArray<>();
 
         ViewHolder(View itemView) {
-            this.itemView = itemView;
+            super(itemView);
         }
 
         @SuppressWarnings("unchecked")
@@ -212,6 +169,10 @@ public abstract class LoopAdapter<T> extends PagerAdapter {
 
         public Context getContext() {
             return itemView.getContext();
+        }
+
+        public View getItemView() {
+            return itemView;
         }
 
         /**

@@ -3,29 +3,37 @@ package com.wenjian.loopbanner;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.database.DataSetObserver;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Build;
 import android.os.Handler;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.FloatRange;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+
+import androidx.annotation.DrawableRes;
+import androidx.annotation.FloatRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.PagerSnapHelper;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
+
 import com.wenjian.loopbanner.indicator.IndicatorAdapter;
 import com.wenjian.loopbanner.indicator.JDIndicatorAdapter;
 import com.wenjian.loopbanner.indicator.SelectDrawableAdapter;
 import com.wenjian.loopbanner.transformer.ScalePageTransformer;
 
 import java.util.List;
+
+import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_DRAGGING;
+import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE;
 
 /**
  * Description: LoopBanner
@@ -66,7 +74,7 @@ public class LoopBanner extends FrameLayout {
      * page相对于父布局的左右边距
      */
     private int mLrMargin;
-    private ViewPager mViewPager;
+    private RecyclerView mViewPager;
     /**
      * 离屏缓存page个数,和ViewPager的参数保持一致
      */
@@ -86,7 +94,7 @@ public class LoopBanner extends FrameLayout {
     private final Runnable mLoopRunnable = new Runnable() {
         @Override
         public void run() {
-            mViewPager.setCurrentItem(++mCurrentIndex);
+            mViewPager.smoothScrollToPosition(++mCurrentIndex);
             mHandler.postDelayed(this, mInterval);
             Tools.logI(TAG, "setCurrentItem" + mCurrentIndex);
         }
@@ -145,7 +153,7 @@ public class LoopBanner extends FrameLayout {
     /**
      * 数据观察者
      */
-    private final DataSetObserver mDataSetObserver = new DataSetObserver() {
+    private final RecyclerView.AdapterDataObserver mDataSetObserver = new RecyclerView.AdapterDataObserver() {
         @Override
         public void onChanged() {
             Tools.logI(TAG, "onChanged");
@@ -158,11 +166,6 @@ public class LoopBanner extends FrameLayout {
                 createIndicatorIfNeed(dataSize);
                 startInternal(true, false);
             }
-        }
-
-        @Override
-        public void onInvalidated() {
-            Tools.logI(TAG, "onInvalidated");
         }
     };
     /**
@@ -239,12 +242,12 @@ public class LoopBanner extends FrameLayout {
 
     private void init() {
 
-        compatLayerType();
-
-        mViewPager = new ViewPager(getContext());
+//        compatLayerType();
+        mViewPager = new RecyclerView(getContext());
         setupViewPager(mViewPager);
+
         mParams = new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-        mParams.setMargins(mLrMargin, mTopMargin, mLrMargin, mBottomMargin);
+//        mParams.setMargins(mLrMargin, mTopMargin, mLrMargin, mBottomMargin);
         this.addView(mViewPager, mParams);
 
         if (mShowIndicator) {
@@ -279,39 +282,83 @@ public class LoopBanner extends FrameLayout {
         return layoutParams;
     }
 
-    private void setupViewPager(ViewPager viewPager) {
-        viewPager.setPageMargin(mPageMargin);
-        viewPager.setOffscreenPageLimit(mOffscreenPageLimit);
-        if (mLrScale > 0 && mLrScale < 1) {
-            viewPager.setPageTransformer(false, new ScalePageTransformer(mLrScale));
-        }
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            }
+    private void setupViewPager(RecyclerView viewPager) {
+        viewPager.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
 
+        final ScrollEventAdapter eventAdapter = new ScrollEventAdapter(viewPager);
+        viewPager.addOnScrollListener(eventAdapter);
+        eventAdapter.setOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
-                Tools.logI(TAG, "onPageSelected: " + position);
-                int lastPosition = mCurrentIndex;
-                mCurrentIndex = position;
-                notifySelectChange(position);
-                updateIndicators(position, lastPosition);
+                super.onPageSelected(position);
+                Log.d(TAG, "onPageSelected: " + position);
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
-                switch (state) {
-                    case ViewPager.SCROLL_STATE_IDLE:
-                        startInternal(false, true);
-                        break;
-                    case ViewPager.SCROLL_STATE_DRAGGING:
-                        stopInternal();
-                        break;
-                    default:
-                }
+                super.onPageScrollStateChanged(state);
+                Log.d(TAG, "onPageScrollStateChanged: " + state);
             }
         });
+        new PagerSnapHelper().attachToRecyclerView(viewPager);
+        if (mLrScale > 0 && mLrScale < 1) {
+//            viewPager.setPageTransformer(false, new ScalePageTransformer(mLrScale));
+        }
+
+//        viewPager.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//            @Override
+//            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+//                super.onScrollStateChanged(recyclerView, newState);
+//                switch (newState) {
+//                    case SCROLL_STATE_DRAGGING:
+//                        stopInternal();
+//                        break;
+//                    case SCROLL_STATE_IDLE:
+//                        startInternal(false, true);
+//                        break;
+//                    default:
+//                }
+//            }
+//
+//            @Override
+//            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+//                super.onScrolled(recyclerView, dx, dy);
+//
+//                final LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+//                final int first = layoutManager.findFirstVisibleItemPosition();
+//                final int last = layoutManager.findLastVisibleItemPosition();
+////                Log.d(TAG, "onScrolled: " + first + " == " + last);
+////                Log.d(TAG, "dx: " + dx);
+//            }
+//        });
+
+//        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+//
+//            @Override
+//            public void onPageSelected(int position) {
+//                super.onPageSelected(position);
+//                Tools.logI(TAG, "onPageSelected: " + position);
+//                int lastPosition = mCurrentIndex;
+//                mCurrentIndex = position;
+//                notifySelectChange(position);
+//                updateIndicators(position, lastPosition);
+//            }
+//
+//            @Override
+//            public void onPageScrollStateChanged(int state) {
+//                super.onPageScrollStateChanged(state);
+//                switch (state) {
+//                    case ViewPager2.SCROLL_STATE_IDLE:
+//                        startInternal(false, true);
+//                        break;
+//                    case ViewPager2.SCROLL_STATE_DRAGGING:
+//                        stopInternal();
+//                        break;
+//                    default:
+//                }
+//            }
+//        });
+
     }
 
     private void notifySelectChange(int position) {
@@ -378,17 +425,13 @@ public class LoopBanner extends FrameLayout {
             mHandler.removeCallbacks(mLoopRunnable);
             final LoopAdapter adapter = getAdapter();
             if (mCurrentIndex == -1 || !resume) {
-                //为了避免setCurrentItem过大导致ANR
-                this.removeView(mViewPager);
                 //如果是刚开始自动轮播，先将页面定位到合适的位置
                 if (mCurrentIndex == -1) {
                     setProperIndex(adapter.getDataSize(), Integer.MAX_VALUE / 2);
                 } else {
                     setProperIndex(adapter.getDataSize(), mCurrentIndex);
                 }
-                mViewPager.setAdapter(adapter);
-                mViewPager.setCurrentItem(mCurrentIndex);
-                this.addView(mViewPager, 0);
+                mViewPager.scrollToPosition(mCurrentIndex);
             }
             mHandler.postDelayed(mLoopRunnable, 200);
             inLoop = true;
@@ -483,9 +526,9 @@ public class LoopBanner extends FrameLayout {
     public void setLrMargin(int lrMargin) {
         checkAdapter("setLrMargin");
         mLrMargin = Tools.dp2px(getContext(), lrMargin);
-        compatLayerType();
-        mParams.setMargins(mLrMargin, mTopMargin, mLrMargin, mBottomMargin);
-        mViewPager.setLayoutParams(mParams);
+//        compatLayerType();
+//        mParams.setMargins(mLrMargin, mTopMargin, mLrMargin, mBottomMargin);
+//        mViewPager.setLayoutParams(mParams);
         adjustIndicator();
     }
 
@@ -521,7 +564,6 @@ public class LoopBanner extends FrameLayout {
     public void setPageMargin(int pageMargin) {
         checkAdapter("setPageMargin");
         mPageMargin = Tools.dp2px(getContext(), pageMargin);
-        mViewPager.setPageMargin(mPageMargin);
         adjustIndicator();
     }
 
@@ -536,7 +578,7 @@ public class LoopBanner extends FrameLayout {
      */
     public void setOffscreenPageLimit(int limit) {
         mOffscreenPageLimit = limit;
-        mViewPager.setOffscreenPageLimit(limit);
+//        mViewPager.setOffscreenPageLimit(limit);
     }
 
     public long getInterval() {
@@ -558,7 +600,7 @@ public class LoopBanner extends FrameLayout {
      * @param pageTransformer 切换动画
      */
     public void setPageTransformer(ViewPager.PageTransformer pageTransformer) {
-        mViewPager.setPageTransformer(false, pageTransformer);
+//        mViewPager.setPageTransformer(false, pageTransformer);
     }
 
     /**
@@ -644,7 +686,7 @@ public class LoopBanner extends FrameLayout {
 
     @Nullable
     public LoopAdapter getAdapter() {
-        PagerAdapter adapter = mViewPager.getAdapter();
+        final RecyclerView.Adapter adapter = mViewPager.getAdapter();
         return adapter == null ? null : (LoopAdapter) adapter;
     }
 
@@ -654,8 +696,10 @@ public class LoopBanner extends FrameLayout {
      * @param adapter LoopAdapter
      */
     public void setAdapter(LoopAdapter<?> adapter) {
+        Tools.checkNotNull(adapter);
         adapter.setCanLoop(mCanLoop);
-        adapter.registerDataSetObserver(mDataSetObserver);
+        adapter.registerAdapterDataObserver(mDataSetObserver);
+        adapter.setHelper(new AdapterHelper(mPageMargin, mLrMargin));
         mViewPager.setAdapter(adapter);
         createIndicatorIfNeed(adapter.getDataSize());
     }
@@ -776,7 +820,7 @@ public class LoopBanner extends FrameLayout {
         }
         LoopScroller scroller = new LoopScroller(getContext());
         scroller.setScrollerDuration(duration);
-        scroller.linkViewPager(mViewPager);
+//        scroller.linkViewPager(mViewPager);
     }
 
     public enum Style {

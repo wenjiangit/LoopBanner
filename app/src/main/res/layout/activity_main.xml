@@ -8,26 +8,25 @@
         tools:context=".MainActivity">
 
 
-    <com.wenjian.loopbanner.LoopBanner
-            android:id="@+id/lb1"
-            android:layout_width="match_parent"
-            android:layout_height="130dp"
-            app:lb_indicatorSelect="@drawable/banner_indicator_select"
-            app:lb_indicatorUnSelect="@drawable/banner_indicator_unselect"
-            app:lb_indicatorStyle="normal"
-            app:lb_pageMargin="4dp"
-            app:lb_lrMargin="16dp"
-            app:lb_interval="4000" />
+<!--    <com.wenjian.loopbanner.LoopBanner-->
+<!--            android:id="@+id/lb1"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="130dp"-->
+<!--            app:lb_indicatorSelect="@drawable/banner_indicator_select"-->
+<!--            app:lb_indicatorUnSelect="@drawable/banner_indicator_unselect"-->
+<!--            app:lb_indicatorStyle="normal"-->
+<!--            app:lb_pageMargin="4dp"-->
+<!--            app:lb_lrMargin="16dp"-->
+<!--            app:lb_interval="4000" />-->
 
 
-    <com.wenjian.loopbanner.LoopBanner
-            android:id="@+id/lb2"
-            android:layout_marginTop="20dp"
-            android:layout_width="match_parent"
-            android:layout_height="140dp"
-            app:lb_indicatorStyle="jd">
+<!--    <com.wenjian.loopbanner.LoopBanner-->
+<!--            android:id="@+id/lb2"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            app:lb_indicatorStyle="jd">-->
 
-    </com.wenjian.loopbanner.LoopBanner>
+<!--    </com.wenjian.loopbanner.LoopBanner>-->
 
 
     <com.wenjian.loopbanner.LoopBanner
@@ -35,9 +34,10 @@
             android:layout_marginTop="20dp"
             android:layout_width="match_parent"
             android:layout_height="150dp"
+            app:lb_pageMargin="10dp"
+            app:lb_lrMargin="20dp"
             app:lb_canLoop="true"
             app:lb_indicatorStyle="pill"
-            app:lb_pageMargin="16dp"
             app:lb_indicatorGravity="bottomRight">
 
     </com.wenjian.loopbanner.LoopBanner>
