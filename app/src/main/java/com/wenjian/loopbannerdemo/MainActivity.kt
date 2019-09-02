@@ -1,6 +1,7 @@
 package com.wenjian.loopbannerdemo
 
 import android.os.Bundle
+import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
 import android.widget.ImageView
@@ -68,11 +69,14 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-//        lb3.adapter?.setNewData(DataCenter.loadEntities())
+//        Handler().postDelayed({
+//            lb3.adapter?.setNewData(DataCenter.loadEntities())
+//        },5000)
+
     }
 
 
-    class MyAdapter(data:List<BannerEntity>) : LoopAdapter<BannerEntity>(data,R.layout.lay_banner_item) {
+    class MyAdapter(data:List<BannerEntity>?) : LoopAdapter<BannerEntity>(data,R.layout.lay_banner_item) {
         override fun onBindView(holder: ViewHolder, data: BannerEntity, position: Int) {
             val image = holder.getView<ImageView>(R.id.iv_image)
             Glide.with(holder.context).load(data.url).into(image)
