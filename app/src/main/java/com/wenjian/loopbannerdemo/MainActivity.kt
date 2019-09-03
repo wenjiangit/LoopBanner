@@ -22,17 +22,22 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         //设置选中监听
         lb1.setOnPageSelectListener {
-            Log.d(TAG, "select = $it")
+//            Log.d(TAG, "select = $it")
         }
+
+        //设置是否自动轮播，默认为true
+        lb1.setAutoLoop(false)
+
+        //设置切换时长
+        lb1.setTransformDuration(1000)
+
         //设置图片资源并添加page点击事件
         lb1.setImages(DataCenter.loadImages()) { _, position ->
             Toast.makeText(this, "position=$position", Toast.LENGTH_SHORT).show()
         }
-        //设置切换时长
-        lb1.setTransformDuration(1000)
 
-        //设置是否自动轮播，默认为true
-        lb1.setAutoLoop(false)
+
+
 
         //仅仅设置图片资源
 //        lb1.setImages(DataCenter.loadImages())

@@ -3,29 +3,38 @@ package com.wenjian.loopbanner;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.database.DataSetObserver;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Build;
+import android.os.Debug;
 import android.os.Handler;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PagerSnapHelper;
+import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+
+
 import com.wenjian.loopbanner.indicator.IndicatorAdapter;
 import com.wenjian.loopbanner.indicator.JDIndicatorAdapter;
 import com.wenjian.loopbanner.indicator.SelectDrawableAdapter;
 import com.wenjian.loopbanner.transformer.ScalePageTransformer;
 
 import java.util.List;
+
+import static android.support.v7.widget.RecyclerView.SCROLL_STATE_DRAGGING;
+import static android.support.v7.widget.RecyclerView.SCROLL_STATE_IDLE;
+
 
 /**
  * Description: LoopBanner
@@ -44,7 +53,7 @@ public class LoopBanner extends FrameLayout {
     private static final int DEFAULT_INDICATOR_SIZE = 6;
     private static final int DEFAULT_INDICATOR_MARGIN = 3;
     private static final int DEFAULT_INDICATOR_MARGIN_TO_PARENT = 16;
-    private static final long TOUCH_DELAY = 4000L;
+    private static final long TOUCH_DELAY = 4000;
     private static final String TAG = "LoopBanner";
 
     /**
@@ -66,7 +75,7 @@ public class LoopBanner extends FrameLayout {
      * page相对于父布局的左右边距
      */
     private int mLrMargin;
-    private ViewPager mViewPager;
+    private RecyclerView mRecycler;
     /**
      * 离屏缓存page个数,和ViewPager的参数保持一致
      */
@@ -79,29 +88,26 @@ public class LoopBanner extends FrameLayout {
      * 当前选中位置
      */
     private int mCurrentIndex = -1;
-    private Handler mHandler = new Handler();
+    private final Handler mHandler = new Handler();
     /**
      * 循环滚动
      */
     private final Runnable mLoopRunnable = new Runnable() {
         @Override
         public void run() {
-            mViewPager.setCurrentItem(++mCurrentIndex);
-            mHandler.postDelayed(this, mInterval);
-            Tools.logI(TAG, "setCurrentItem" + mCurrentIndex);
+            if (mAutoLoop) {
+                mRecycler.smoothScrollToPosition(++mCurrentIndex);
+                mHandler.postDelayed(this, mInterval);
+            } else {
+                mHandler.removeCallbacks(this);
+            }
+//            Tools.logI(TAG, "setCurrentItem" + mCurrentIndex);
         }
     };
-
-
-    /**
-     * 是否自动轮播
-     */
-    private boolean mAutoLoop = true;
-
     /**
      * 是否循环播放
      */
-    private boolean mCanLoop;
+    private boolean mCanLoop = true;
     /**
      * 所有缩放
      */
@@ -152,7 +158,7 @@ public class LoopBanner extends FrameLayout {
     /**
      * 数据观察者
      */
-    private final DataSetObserver mDataSetObserver = new DataSetObserver() {
+    private final RecyclerView.AdapterDataObserver mDataSetObserver = new RecyclerView.AdapterDataObserver() {
         @Override
         public void onChanged() {
             Tools.logI(TAG, "onChanged");
@@ -160,20 +166,11 @@ public class LoopBanner extends FrameLayout {
         }
 
         @Override
-        public void onInvalidated() {
-            Tools.logI(TAG, "onInvalidated");
+        public void onItemRangeChanged(int positionStart, int itemCount) {
+            super.onItemRangeChanged(positionStart, itemCount);
+            Log.d(TAG, "onItemRangeChanged: ");
         }
     };
-
-    /**
-     * 恢复初始状态
-     */
-    private void restoreInitState() {
-        createIndicatorIfNeed();
-        seekToPosition(-1);
-        startInternal(true, false);
-    }
-
     /**
      * mIndicatorContainer相对于父容器的垂直方向间距
      */
@@ -182,6 +179,8 @@ public class LoopBanner extends FrameLayout {
      * mIndicatorContainer相对于父容器的水平方向间距
      */
     private int mIndicatorParentMarginH;
+    private LinearLayoutManager mLayoutManager;
+    private boolean mAutoLoop = true;
 
     public LoopBanner(@NonNull Context context) {
         this(context, null);
@@ -228,7 +227,6 @@ public class LoopBanner extends FrameLayout {
         init();
     }
 
-
     private void handleIndicatorStyle(int style) {
         Style s;
         switch (style) {
@@ -245,26 +243,33 @@ public class LoopBanner extends FrameLayout {
     }
 
 
+    /**
+     * 恢复初始状态
+     */
+    private void restoreInitState() {
+        createIndicatorIfNeed();
+        startInternal(true);
+    }
+
+
     private void setProperIndex(int dataSize, int curIndex) {
         Tools.logI(TAG, "oldIndex: " + curIndex);
-        int ret = Math.round(curIndex * 1.0f / dataSize + 0.5f) * dataSize;
+        int ret = Math.round(curIndex * 1.0f / dataSize + 0.5f) * dataSize - 1;
         mCurrentIndex = ret >= 0 ? ret : 0;
         Tools.logI(TAG, "mCurrentIndex: " + mCurrentIndex);
     }
 
     private void init() {
 
-        compatLayerType();
+        mRecycler = new RecyclerView(getContext());
+        setupViewPager(mRecycler);
 
-        mViewPager = new ViewPager(getContext());
-        setupViewPager(mViewPager);
         mParams = new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-        mParams.setMargins(mLrMargin, mTopMargin, mLrMargin, mBottomMargin);
-        this.addView(mViewPager, mParams);
+        this.addView(mRecycler, mParams);
 
-//        if (mShowIndicator) {
-//            initIndicatorContainer();
-//        }
+        if (mShowIndicator) {
+            initIndicatorContainer();
+        }
     }
 
     private void initIndicatorContainer() {
@@ -294,39 +299,54 @@ public class LoopBanner extends FrameLayout {
         return layoutParams;
     }
 
-    private void setupViewPager(ViewPager viewPager) {
-        viewPager.setPageMargin(mPageMargin);
-        viewPager.setOffscreenPageLimit(mOffscreenPageLimit);
-        if (mLrScale > 0 && mLrScale < 1) {
-            viewPager.setPageTransformer(false, new ScalePageTransformer(mLrScale));
-        }
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+    private int lastPosition;
+
+    private void setupViewPager(RecyclerView viewPager) {
+
+        mLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        viewPager.setLayoutManager(mLayoutManager);
+
+        viewPager.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                if (dx != 0) {
+                    final int cur = mLayoutManager.findFirstCompletelyVisibleItemPosition();
+                    if (cur == RecyclerView.NO_POSITION) {
+                        return;
+                    }
+                    if (cur != lastPosition) {
+                        Tools.logI(TAG, "onPageSelected: " + cur);
+                        mCurrentIndex = cur;
+                        notifySelectChange(cur);
+                        updateIndicators(cur, lastPosition);
+                        lastPosition = cur;
+                    }
+                }
+
             }
 
             @Override
-            public void onPageSelected(int position) {
-                Tools.logI(TAG, "onPageSelected: " + position);
-                int lastPosition = mCurrentIndex;
-                mCurrentIndex = position;
-                notifySelectChange(position);
-                updateIndicators(position, lastPosition);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-                switch (state) {
-                    case ViewPager.SCROLL_STATE_IDLE:
-                        startInternal(false, true);
-                        break;
-                    case ViewPager.SCROLL_STATE_DRAGGING:
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                switch (newState) {
+                    case SCROLL_STATE_DRAGGING:
                         stopInternal();
+                        break;
+                    case SCROLL_STATE_IDLE:
+                        startInternal(false);
                         break;
                     default:
                 }
             }
         });
+
+        new PagerSnapHelper().attachToRecyclerView(viewPager);
+        if (mLrScale > 0 && mLrScale < 1) {
+//            viewPager.setPageTransformer(false, new ScalePageTransformer(mLrScale));
+        }
     }
 
     private void notifySelectChange(int position) {
@@ -381,19 +401,18 @@ public class LoopBanner extends FrameLayout {
     /**
      * 启动轮播
      *
-     * @param force  强制启动
-     * @param resume 是否恢复上一次的轮播
+     * @param force 强制启动
      */
     @SuppressWarnings("ConstantConditions")
-    private void startInternal(boolean force, boolean resume) {
-        if (!mAutoLoop || !checkAdapterAndDataSize()) {
+    private void startInternal(boolean force) {
+        if (mCanLoop && mCurrentIndex == -1) {
+            seekToOriginPos();
+        }
+        if (!mAutoLoop || !dataSizeValid()) {
             return;
         }
         if (force) {
             mHandler.removeCallbacks(mLoopRunnable);
-            if (mCurrentIndex == -1 || !resume) {
-                seekToPosition(mCurrentIndex);
-            }
             mHandler.postDelayed(mLoopRunnable, mInterval);
             inLoop = true;
         } else {
@@ -405,36 +424,19 @@ public class LoopBanner extends FrameLayout {
         }
     }
 
-    /**
-     * 定位到合适的位置
-     *
-     * @param position 位置
-     */
-    private void seekToPosition(int position) {
-        if (!mCanLoop) {
-            return;
-        }
+    private void seekToOriginPos() {
         final LoopAdapter adapter = getAdapter();
-        if (adapter == null) {
-            return;
-        }
-        //为了避免setCurrentItem过大导致ANR
-        this.removeView(mViewPager);
         //如果是刚开始自动轮播，先将页面定位到合适的位置
-        if (position == -1) {
-            setProperIndex(adapter.getDataSize(), Integer.MAX_VALUE / 2);
-        } else {
-            setProperIndex(adapter.getDataSize(), position);
-        }
-        mViewPager.setAdapter(adapter);
-        mViewPager.setCurrentItem(mCurrentIndex);
-        this.addView(mViewPager, 0);
+        setProperIndex(adapter.getDataSize(), 10);
+        mRecycler.scrollToPosition(mCurrentIndex);
+        Log.d(TAG, "seekToOriginPos: " + mCurrentIndex);
     }
+
 
     /**
      * 保证数据的长度大于1才轮播
      */
-    private boolean checkAdapterAndDataSize() {
+    private boolean dataSizeValid() {
         LoopAdapter adapter = getAdapter();
         if (adapter == null) {
             return false;
@@ -456,6 +458,16 @@ public class LoopBanner extends FrameLayout {
         this.mCanLoop = enable;
     }
 
+
+    /**
+     * 是否自动轮播
+     *
+     * @param autoLoop 自动轮播
+     */
+    public void setAutoLoop(boolean autoLoop) {
+        this.mAutoLoop = autoLoop;
+    }
+
     /**
      * 开启调试模式,可以输出日志信息
      */
@@ -473,8 +485,7 @@ public class LoopBanner extends FrameLayout {
         int marginDp = Tools.dp2px(getContext(), margin);
         mParams.setMargins(marginDp, marginDp, marginDp, marginDp);
         mLrMargin = mTopMargin = mBottomMargin = marginDp;
-        compatLayerType();
-        mViewPager.setLayoutParams(mParams);
+        mRecycler.setLayoutParams(mParams);
         adjustIndicator();
     }
 
@@ -488,7 +499,7 @@ public class LoopBanner extends FrameLayout {
         final int topMarginDp = Tools.dp2px(getContext(), topMargin);
         mParams.topMargin = topMarginDp;
         mTopMargin = topMarginDp;
-        mViewPager.setLayoutParams(mParams);
+        mRecycler.setLayoutParams(mParams);
         adjustIndicator();
     }
 
@@ -501,7 +512,7 @@ public class LoopBanner extends FrameLayout {
         checkAdapter("setBottomMargin");
         mBottomMargin = Tools.dp2px(getContext(), bottomMargin);
         mParams.bottomMargin = mBottomMargin;
-        mViewPager.setLayoutParams(mParams);
+        mRecycler.setLayoutParams(mParams);
         adjustIndicator();
     }
 
@@ -513,24 +524,7 @@ public class LoopBanner extends FrameLayout {
     public void setLrMargin(int lrMargin) {
         checkAdapter("setLrMargin");
         mLrMargin = Tools.dp2px(getContext(), lrMargin);
-        compatLayerType();
-        mParams.setMargins(mLrMargin, mTopMargin, mLrMargin, mBottomMargin);
-        mViewPager.setLayoutParams(mParams);
         adjustIndicator();
-    }
-
-    /**
-     * 如果需要显示当前选中页前一个和后一个的一部分，则需要禁用硬件加速
-     * 并不对超出父view的子view进行裁剪
-     */
-    private void compatLayerType() {
-        if (mLrMargin > 0) {
-            setLayerType(LAYER_TYPE_SOFTWARE, null);
-            setClipChildren(false);
-        } else {
-            setLayerType(LAYER_TYPE_HARDWARE, null);
-            setClipChildren(true);
-        }
     }
 
     private void adjustIndicator() {
@@ -551,7 +545,6 @@ public class LoopBanner extends FrameLayout {
     public void setPageMargin(int pageMargin) {
         checkAdapter("setPageMargin");
         mPageMargin = Tools.dp2px(getContext(), pageMargin);
-        mViewPager.setPageMargin(mPageMargin);
         adjustIndicator();
     }
 
@@ -566,7 +559,7 @@ public class LoopBanner extends FrameLayout {
      */
     public void setOffscreenPageLimit(int limit) {
         mOffscreenPageLimit = limit;
-        mViewPager.setOffscreenPageLimit(limit);
+//        mRecycler.setOffscreenPageLimit(limit);
     }
 
     public long getInterval() {
@@ -577,17 +570,33 @@ public class LoopBanner extends FrameLayout {
     /**
      * 设置当前位置
      *
-     * @param position
+     * @param position 目标位置
+     * @param smooth   是否缓慢移动
      */
-    public void setCurrentItem(int position) {
+    public void setCurrentItem(int position, boolean smooth) {
         final LoopAdapter adapter = getAdapter();
         if (adapter == null) {
             return;
         }
         final int dataPosition = adapter.getDataPosition(mCurrentIndex);
         int del = position - dataPosition;
-        mViewPager.setCurrentItem(mCurrentIndex + del);
+        if (smooth) {
+            mRecycler.smoothScrollToPosition(mCurrentIndex + del);
+        } else {
+            mRecycler.scrollToPosition(mCurrentIndex + del);
+        }
     }
+
+
+    /**
+     * 设置当前位置
+     *
+     * @param position 目标位置
+     */
+    public void setCurrentItem(int position) {
+        setCurrentItem(position, false);
+    }
+
 
     /**
      * 设置轮播间隔时间
@@ -604,7 +613,7 @@ public class LoopBanner extends FrameLayout {
      * @param pageTransformer 切换动画
      */
     public void setPageTransformer(ViewPager.PageTransformer pageTransformer) {
-        mViewPager.setPageTransformer(false, pageTransformer);
+//        mRecycler.setPageTransformer(false, pageTransformer);
     }
 
     /**
@@ -634,7 +643,7 @@ public class LoopBanner extends FrameLayout {
         super.onWindowVisibilityChanged(visibility);
         Tools.logI(TAG, "onWindowVisibilityChanged," + visibility);
         if (visibility == VISIBLE) {
-            startInternal(true, true);
+            startInternal(true);
         } else {
             stopInternal();
         }
@@ -652,12 +661,11 @@ public class LoopBanner extends FrameLayout {
      * 强制开始轮播，适配某些机型自动轮播失效的时候需要手动调用该函数
      */
     public void forceStart() {
-        mAutoLoop = true;
-        startInternal(true, false);
+        startInternal(true);
     }
 
     private void createIndicatorIfNeed() {
-        if (!mShowIndicator || !checkAdapterAndDataSize()) {
+        if (!mShowIndicator || !dataSizeValid()) {
             if (mIndicatorContainer != null) {
                 this.removeView(mIndicatorContainer);
                 mIndicatorContainer = null;
@@ -699,18 +707,8 @@ public class LoopBanner extends FrameLayout {
 
     @Nullable
     public LoopAdapter getAdapter() {
-        PagerAdapter adapter = mViewPager.getAdapter();
+        final RecyclerView.Adapter adapter = mRecycler.getAdapter();
         return adapter == null ? null : (LoopAdapter) adapter;
-    }
-
-
-    /**
-     * 设置自动轮播
-     *
-     * @param autoLoop 是否自动轮播
-     */
-    public void setAutoLoop(boolean autoLoop) {
-        this.mAutoLoop = autoLoop;
     }
 
     /**
@@ -719,10 +717,11 @@ public class LoopBanner extends FrameLayout {
      * @param adapter LoopAdapter
      */
     public void setAdapter(LoopAdapter<?> adapter) {
-        Tools.checkNotNull(adapter, "adapter == null");
+        Tools.checkNotNull(adapter);
         adapter.setCanLoop(mCanLoop);
-        adapter.registerDataSetObserver(mDataSetObserver);
-        mViewPager.setAdapter(adapter);
+        adapter.registerAdapterDataObserver(mDataSetObserver);
+        adapter.setHelper(new AdapterHelper(mPageMargin, mLrMargin));
+        mRecycler.setAdapter(adapter);
         restoreInitState();
     }
 
@@ -746,19 +745,18 @@ public class LoopBanner extends FrameLayout {
      *
      * @param enable 是否可用
      */
-    @Deprecated
     public void enableIndicator(boolean enable) {
-        this.showIndicator(enable);
-    }
-
-    /**
-     * 是否显示指示器
-     *
-     * @param show 显示与否
-     */
-    public void showIndicator(boolean show) {
-        this.mShowIndicator = show;
-        createIndicatorIfNeed();
+        this.mShowIndicator = enable;
+        if (enable) {
+            if (mIndicatorContainer == null) {
+                initIndicatorContainer();
+            }
+        } else {
+            if (mIndicatorContainer != null) {
+                this.removeView(mIndicatorContainer);
+                mIndicatorContainer = null;
+            }
+        }
     }
 
     private void setIndicatorAdapter(IndicatorAdapter indicatorAdapter, boolean byeUser) {
@@ -843,7 +841,7 @@ public class LoopBanner extends FrameLayout {
         }
         LoopScroller scroller = new LoopScroller(getContext());
         scroller.setScrollerDuration(duration);
-        scroller.linkViewPager(mViewPager);
+//        scroller.linkViewPager(mRecycler);
     }
 
     public enum Style {

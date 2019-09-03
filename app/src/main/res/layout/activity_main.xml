@@ -37,7 +37,6 @@
             android:layout_height="150dp"
             app:lb_canLoop="true"
             app:lb_indicatorStyle="pill"
-            app:lb_pageMargin="16dp"
             app:lb_indicatorGravity="bottomRight">
 
     </com.wenjian.loopbanner.LoopBanner>
