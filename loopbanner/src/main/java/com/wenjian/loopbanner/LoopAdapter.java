@@ -13,6 +13,7 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -29,7 +30,6 @@ import java.util.List;
 public abstract class LoopAdapter<T> extends RecyclerView.Adapter<LoopAdapter.ViewHolder> {
 
     private static final String TAG = "LoopAdapter";
-    private final SparseArray<ViewHolder> mHolderMap = new SparseArray<>();
     private List<T> mData;
     private int mLayoutId;
     private boolean mCanLoop = true;
@@ -110,9 +110,7 @@ public abstract class LoopAdapter<T> extends RecyclerView.Adapter<LoopAdapter.Vi
         if (mLayoutId != -1) {
             view = LayoutInflater.from(container.getContext()).inflate(mLayoutId, container, false);
         } else {
-            ImageView imageView = new ImageView(container.getContext());
-            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            view = imageView;
+            view = LayoutInflater.from(container.getContext()).inflate(R.layout.lay_internal_img,container,false);
         }
         return view;
     }
@@ -133,7 +131,6 @@ public abstract class LoopAdapter<T> extends RecyclerView.Adapter<LoopAdapter.Vi
      */
     public final void setNewData(List<T> data) {
         mData = data != null ? data : new ArrayList<T>();
-        mHolderMap.clear();
         notifyDataSetChanged();
     }
 

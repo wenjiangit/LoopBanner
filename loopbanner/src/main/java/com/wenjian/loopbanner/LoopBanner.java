@@ -6,7 +6,6 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Build;
-import android.os.Debug;
 import android.os.Handler;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.FloatRange;
@@ -21,6 +20,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
@@ -254,7 +254,7 @@ public class LoopBanner extends FrameLayout {
 
     private void setProperIndex(int dataSize, int curIndex) {
         Tools.logI(TAG, "oldIndex: " + curIndex);
-        int ret = Math.round(curIndex * 1.0f / dataSize + 0.5f) * dataSize - 1;
+        int ret = Math.round(curIndex * 1.0f / dataSize + 0.5f) * dataSize;
         mCurrentIndex = ret >= 0 ? ret : 0;
         Tools.logI(TAG, "mCurrentIndex: " + mCurrentIndex);
     }
@@ -307,6 +307,8 @@ public class LoopBanner extends FrameLayout {
         mLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         viewPager.setLayoutManager(mLayoutManager);
 
+        initFirstWidth();
+
         viewPager.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
@@ -314,11 +316,12 @@ public class LoopBanner extends FrameLayout {
 
                 if (dx != 0) {
                     final int cur = mLayoutManager.findFirstCompletelyVisibleItemPosition();
+                    Log.d(TAG, "onScrolled: " + cur);
                     if (cur == RecyclerView.NO_POSITION) {
                         return;
                     }
                     if (cur != lastPosition) {
-                        Tools.logI(TAG, "onPageSelected: " + cur);
+//                        Tools.logI(TAG, "onPageSelected: " + cur);
                         mCurrentIndex = cur;
                         notifySelectChange(cur);
                         updateIndicators(cur, lastPosition);
@@ -344,9 +347,23 @@ public class LoopBanner extends FrameLayout {
         });
 
         new PagerSnapHelper().attachToRecyclerView(viewPager);
-        if (mLrScale > 0 && mLrScale < 1) {
+//        if (mLrScale > 0 && mLrScale < 1) {
 //            viewPager.setPageTransformer(false, new ScalePageTransformer(mLrScale));
-        }
+//        }
+    }
+
+    private void initFirstWidth() {
+        mRecycler.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    mRecycler.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                }else {
+                    mRecycler.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                }
+                seekToOriginPosition();
+            }
+        });
     }
 
     private void notifySelectChange(int position) {
@@ -406,7 +423,7 @@ public class LoopBanner extends FrameLayout {
     @SuppressWarnings("ConstantConditions")
     private void startInternal(boolean force) {
         if (mCanLoop && mCurrentIndex == -1) {
-            seekToOriginPos();
+            seekToOriginPosition();
         }
         if (!mAutoLoop || !dataSizeValid()) {
             return;
@@ -424,12 +441,12 @@ public class LoopBanner extends FrameLayout {
         }
     }
 
-    private void seekToOriginPos() {
+    private void seekToOriginPosition() {
         final LoopAdapter adapter = getAdapter();
         //如果是刚开始自动轮播，先将页面定位到合适的位置
-        setProperIndex(adapter.getDataSize(), 10);
-        mRecycler.scrollToPosition(mCurrentIndex);
-        Log.d(TAG, "seekToOriginPos: " + mCurrentIndex);
+        setProperIndex(adapter.getDataSize(), 100);
+        mLayoutManager.scrollToPositionWithOffset(mCurrentIndex,mLrMargin);
+        Log.d(TAG, "seekToOriginPosition: " + mCurrentIndex);
     }
 
 

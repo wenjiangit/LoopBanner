@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
         lb1.setTransformDuration(1000)
 
         //设置图片资源并添加page点击事件
-        lb1.setImages(DataCenter.loadImages()) { _, position ->
+        lb1.setImages(DataCenter.loadImages().take(2)) { _, position ->
             Toast.makeText(this, "position=$position", Toast.LENGTH_SHORT).show()
         }
 
@@ -47,17 +47,19 @@ class MainActivity : AppCompatActivity() {
 //        lb1.setIndicatorStyle(LoopBanner.Style.PILL)
 
         //设置中心page的左右边距
-        lb2.setLrMargin(40)
+        lb2.setLrMargin(20)
         //设置page之间的间距
-        lb2.pageMargin = 10
+        lb2.pageMargin = 6
 
         //开启调试模式,有关键日志输出
         lb2.openDebug()
         //允许左右缩放,默认缩放比例为0.85
         lb2.enableScale()
 
+        lb2.setAutoLoop(false)
+
         //直接设置adapter,默认的itemView是ImageView
-        lb2.adapter = object : LoopAdapter<String>(DataCenter.loadImages()) {
+        lb2.adapter = object : LoopAdapter<String>(DataCenter.loadImages().take(3)) {
             override fun onBindView(holder: ViewHolder, data: String, position: Int) {
                 val itemView = holder.itemView as ImageView
                 Glide.with(holder.context)

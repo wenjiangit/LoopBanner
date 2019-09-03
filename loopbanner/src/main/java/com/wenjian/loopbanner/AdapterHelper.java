@@ -15,15 +15,10 @@ class AdapterHelper {
     }
 
     void onCreateViewHolder(@NonNull ViewGroup parent, View view) {
-        ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
-        if (lp == null) {
-            lp = new ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT);
-        }
+        ViewGroup.LayoutParams lp = view.getLayoutParams();
         lp.width = parent.getWidth() - lrMargin * 2;
         view.setLayoutParams(lp);
     }
-
 
     void onBindViewHolder(@NonNull LoopAdapter.ViewHolder holder) {
         final ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) holder.itemView.getLayoutParams();
