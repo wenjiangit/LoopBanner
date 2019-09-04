@@ -300,40 +300,30 @@ public class LoopBanner extends FrameLayout {
     }
 
 
-    private int lastPosition;
+    private int mLastPosition;
 
-    private void setupViewPager(RecyclerView viewPager) {
+    private void setupViewPager(final RecyclerView viewPager) {
 
         mLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         viewPager.setLayoutManager(mLayoutManager);
 
         initFirstWidth();
 
+        final PagerSnapHelper pagerSnapHelper = new PagerSnapHelper();
+        pagerSnapHelper.attachToRecyclerView(viewPager);
         viewPager.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-
-                if (dx != 0) {
-                    final int cur = mLayoutManager.findFirstCompletelyVisibleItemPosition();
-                    Log.d(TAG, "onScrolled: " + cur);
-                    if (cur == RecyclerView.NO_POSITION) {
-                        return;
-                    }
-                    if (cur != lastPosition) {
-//                        Tools.logI(TAG, "onPageSelected: " + cur);
-                        mCurrentIndex = cur;
-                        notifySelectChange(cur);
-                        updateIndicators(cur, lastPosition);
-                        lastPosition = cur;
-                    }
-                }
-
-            }
-
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
+                final View snapView = pagerSnapHelper.findSnapView(mLayoutManager);
+                final int cur = viewPager.getChildAdapterPosition(snapView);
+                if (cur != mLastPosition) {
+                    Tools.logI(TAG, "onPageSelected: " + cur);
+                    mCurrentIndex = cur;
+                    notifySelectChange(cur);
+                    updateIndicators(cur, mLastPosition);
+                    mLastPosition = cur;
+                }
                 switch (newState) {
                     case SCROLL_STATE_DRAGGING:
                         stopInternal();
@@ -346,7 +336,7 @@ public class LoopBanner extends FrameLayout {
             }
         });
 
-        new PagerSnapHelper().attachToRecyclerView(viewPager);
+
 //        if (mLrScale > 0 && mLrScale < 1) {
 //            viewPager.setPageTransformer(false, new ScalePageTransformer(mLrScale));
 //        }
@@ -358,7 +348,7 @@ public class LoopBanner extends FrameLayout {
             public void onGlobalLayout() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                     mRecycler.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                }else {
+                } else {
                     mRecycler.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                 }
                 seekToOriginPosition();
@@ -445,7 +435,7 @@ public class LoopBanner extends FrameLayout {
         final LoopAdapter adapter = getAdapter();
         //如果是刚开始自动轮播，先将页面定位到合适的位置
         setProperIndex(adapter.getDataSize(), 100);
-        mLayoutManager.scrollToPositionWithOffset(mCurrentIndex,mLrMargin);
+        mLayoutManager.scrollToPositionWithOffset(mCurrentIndex, mLrMargin);
         Log.d(TAG, "seekToOriginPosition: " + mCurrentIndex);
     }
 

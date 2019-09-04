@@ -56,8 +56,6 @@ class MainActivity : AppCompatActivity() {
         //允许左右缩放,默认缩放比例为0.85
         lb2.enableScale()
 
-        lb2.setAutoLoop(false)
-
         //直接设置adapter,默认的itemView是ImageView
         lb2.adapter = object : LoopAdapter<String>(DataCenter.loadImages().take(3)) {
             override fun onBindView(holder: ViewHolder, data: String, position: Int) {
