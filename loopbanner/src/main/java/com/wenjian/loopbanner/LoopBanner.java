@@ -433,6 +433,9 @@ public class LoopBanner extends FrameLayout {
 
     private void seekToOriginPosition() {
         final LoopAdapter adapter = getAdapter();
+        if（adapter == null){
+            return;
+        }
         //如果是刚开始自动轮播，先将页面定位到合适的位置
         setProperIndex(adapter.getDataSize(), 100);
         mLayoutManager.scrollToPositionWithOffset(mCurrentIndex, mLrMargin);
