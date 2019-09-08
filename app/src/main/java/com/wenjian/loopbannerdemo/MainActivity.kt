@@ -1,8 +1,8 @@
 package com.wenjian.loopbannerdemo
 
 import android.os.Bundle
+import android.os.Handler
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.widget.ImageView
 import android.widget.Toast
 import com.bumptech.glide.Glide
@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         //设置选中监听
         lb1.setOnPageSelectListener {
-//            Log.d(TAG, "select = $it")
+            //            Log.d(TAG, "select = $it")
         }
 
         //设置是否自动轮播，默认为true
@@ -35,8 +35,6 @@ class MainActivity : AppCompatActivity() {
         lb1.setImages(DataCenter.loadImages().take(2)) { _, position ->
             Toast.makeText(this, "position=$position", Toast.LENGTH_SHORT).show()
         }
-
-
 
 
         //仅仅设置图片资源
@@ -71,7 +69,8 @@ class MainActivity : AppCompatActivity() {
                     )
                     .into(itemView)
                 itemView.setOnClickListener {
-                    Toast.makeText(this@MainActivity, "position=$position", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MainActivity, "position=$position", Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
         }
@@ -83,7 +82,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        lb3.adapter?.setNewData(DataCenter.loadEntities())
+
+        Handler().postDelayed({
+            lb3.adapter?.setNewData(DataCenter.loadEntities())
+
+        }, 5000)
+
     }
 
 
